@@ -101,6 +101,76 @@ export default function TrackSubmission() {
             </div>
           </div>
 
+          {/* Investigation Lifecycle Stepper */}
+          <div style={{
+            background: 'var(--bg-alt)',
+            padding: 'var(--space-md)',
+            borderRadius: '4px',
+            border: '1px solid var(--border)',
+            marginBottom: 'var(--space-md)'
+          }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--fg-secondary)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Investigation Lifecycle
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+              <div style={{
+                position: 'absolute', top: '14px', left: '15%', right: '15%', height: '2px', background: 'var(--border)', zIndex: 0
+              }} />
+
+              {/* Step 1: Received */}
+              <div style={{ textAlign: 'center', zIndex: 1 }}>
+                <div style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
+                  background: 'var(--accent)', color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.75rem', fontWeight: 700, margin: '0 auto 0.25rem auto'
+                }}>
+                  ✓
+                </div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>Received</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--fg-secondary)' }}>Logged anonymously</div>
+              </div>
+
+              {/* Step 2: Under Review */}
+              <div style={{ textAlign: 'center', zIndex: 1 }}>
+                <div style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
+                  background: (submission.status === 'under_review' || submission.status === 'resolved') ? 'var(--accent)' : 'var(--bg-alt)',
+                  color: (submission.status === 'under_review' || submission.status === 'resolved') ? '#fff' : 'var(--fg-secondary)',
+                  border: (submission.status === 'under_review' || submission.status === 'resolved') ? 'none' : '2px solid var(--border)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.75rem', fontWeight: 700, margin: '0 auto 0.25rem auto'
+                }}>
+                  {submission.status === 'resolved' ? '✓' : '2'}
+                </div>
+                <div style={{ fontSize: '0.75rem', fontWeight: (submission.status === 'under_review' ? 700 : 500) }}>Under Review</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--fg-secondary)' }}>
+                  {submission.status === 'under_review' ? 'In progress' : submission.status === 'resolved' ? 'Completed' : 'Awaiting review'}
+                </div>
+              </div>
+
+              {/* Step 3: Resolution */}
+              <div style={{ textAlign: 'center', zIndex: 1 }}>
+                <div style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
+                  background: submission.status === 'resolved' ? 'var(--success)' : submission.status === 'rejected' ? 'var(--danger)' : 'var(--bg-alt)',
+                  color: (submission.status === 'resolved' || submission.status === 'rejected') ? '#fff' : 'var(--fg-secondary)',
+                  border: (submission.status === 'resolved' || submission.status === 'rejected') ? 'none' : '2px solid var(--border)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.75rem', fontWeight: 700, margin: '0 auto 0.25rem auto'
+                }}>
+                  {submission.status === 'resolved' ? '✓' : submission.status === 'rejected' ? '✕' : '3'}
+                </div>
+                <div style={{ fontSize: '0.75rem', fontWeight: (submission.status === 'resolved' ? 700 : 500) }}>
+                  {submission.status === 'rejected' ? 'Rejected' : 'Resolved'}
+                </div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--fg-secondary)' }}>
+                  {submission.status === 'resolved' ? 'Action taken' : submission.status === 'rejected' ? 'Closed' : 'Final stage'}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)', marginTop: 'var(--space-md)' }}>
             <h3 style={{ fontSize: '0.95rem', marginBottom: '0.5rem', fontFamily: 'var(--font-sans)' }}>Details</h3>
             <MarkdownRenderer content={submission.description} />
