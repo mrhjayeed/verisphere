@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function OfficialDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [official, setOfficial] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -65,6 +66,30 @@ export default function OfficialDetail() {
     }
   };
 
+  const [showComplaintForm, setShowComplaintForm] = useState(false);
+  const [complaintForm, setComplaintForm] = useState({ text: '', reportId: '' });
+  const [reportsList, setReportsList] = useState([]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      api.get('/reports')
+        .then((res) => setReportsList(res.data.reports || []))
+        .catch(console.error);
+    }
+  }, [isAdmin]);
+
+  const handleAddComplaint = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post(`/officials/${id}/complaints`, complaintForm);
+      setComplaintForm({ text: '', reportId: '' });
+      setShowComplaintForm(false);
+      fetchOfficial();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to add complaint');
+    }
+  };
+
   if (loading) return <div className="loading">Loading official...</div>;
   if (!official) return <div className="empty-state"><h3>Official not found</h3></div>;
 
@@ -73,8 +98,6 @@ export default function OfficialDetail() {
     broken: official.promises.filter(p => p.status === 'broken').length,
     pending: official.promises.filter(p => p.status === 'pending').length,
   };
-
-  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="detail-page">
@@ -250,7 +273,48 @@ export default function OfficialDetail() {
 
       {/* COMPLAINTS */}
       <div className="detail-section">
-        <h2>Complaints ({official.complaints.length})</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: 'var(--space-md)' }}>
+          <h2>Complaints ({official.complaints.length})</h2>
+          {isAdmin && (
+            <button className="btn btn-sm btn-outline" onClick={() => setShowComplaintForm(!showComplaintForm)}>
+              {showComplaintForm ? 'Cancel' : '+ Link Complaint / Report'}
+            </button>
+          )}
+        </div>
+
+        {showComplaintForm && (
+          <div className="card" style={{ marginBottom: 'var(--space-md)' }}>
+            <form onSubmit={handleAddComplaint}>
+              <div className="form-group">
+                <label>Complaint Summary</label>
+                <input
+                  className="form-input"
+                  value={complaintForm.text}
+                  onChange={(e) => setComplaintForm({ ...complaintForm, text: e.target.value })}
+                  placeholder="e.g., Continued industrial discharge despite environmental regulations"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Link to Civic Report (Optional)</label>
+                <select
+                  className="form-select"
+                  value={complaintForm.reportId}
+                  onChange={(e) => setComplaintForm({ ...complaintForm, reportId: e.target.value })}
+                >
+                  <option value="">-- No linked report --</option>
+                  {reportsList.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.title} ({r.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button type="submit" className="btn btn-sm btn-primary">Save Complaint</button>
+            </form>
+          </div>
+        )}
+
         {official.complaints.length === 0 ? (
           <p className="text-secondary">No complaints filed.</p>
         ) : (
