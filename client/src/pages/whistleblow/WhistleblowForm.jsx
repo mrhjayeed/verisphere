@@ -99,29 +99,27 @@ export default function WhistleblowForm() {
 
   return (
     <div style={{ maxWidth: '680px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1>Anonymous Whistleblowing</h1>
-          <p className="text-secondary" style={{ marginBottom: 'var(--space-xl)' }}>
-            Submit sensitive information securely. When "submit anonymously" is checked,
-            no identifying information is stored with your submission.
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Link to="/whistleblow/track" className="btn btn-outline">
-            🔍 Track by Code
-          </Link>
-          {user && (
-            <Link to="/whistleblow/mine" className="btn btn-outline">
-              My Submissions →
+      <div className="page-header" style={{ marginBottom: 'var(--space-lg)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.5rem' }}>
+          <h1 style={{ marginBottom: 0 }}>Anonymous Whistleblowing</h1>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <Link to="/whistleblow/track" className="btn btn-sm btn-outline">
+              Track by Code
             </Link>
-          )}
+            {user && (
+              <Link to="/whistleblow/mine" className="btn btn-sm btn-outline">
+                My Submissions →
+              </Link>
+            )}
+          </div>
         </div>
+        <p className="text-secondary" style={{ marginBottom: 0 }}>
+          Submit sensitive information securely. When "submit anonymously" is checked, no identifying information is stored with your submission.
+        </p>
       </div>
 
       <div className="alert alert-info" style={{ marginBottom: 'var(--space-xl)' }}>
-        <strong>Privacy notice:</strong> Anonymous submissions store no user ID, IP address, or session data.
-        Your submission cannot be traced back to you.
+        <strong>Privacy notice:</strong> Anonymous submissions store no user ID, IP address, or session data. Your submission cannot be traced back to you.
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
