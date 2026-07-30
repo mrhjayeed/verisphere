@@ -1,5 +1,23 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, '../uploads');
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+for (let i = 1; i <= 5; i++) {
+  const filePath = path.join(uploadsDir, `placeholder-evidence-${i}.pdf`);
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, '%PDF-1.4 %placeholder evidence document\n');
+  }
+}
 
 const prisma = new PrismaClient();
 
