@@ -3,5 +3,6 @@ dist/
 .env
 .env.local
 *.log
-uploads/
+server/uploads/*
+!server/uploads/placeholder-evidence-*.pdf
 .DS_Store
