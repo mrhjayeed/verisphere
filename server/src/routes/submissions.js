@@ -50,6 +50,37 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 });
 
+import crypto from 'crypto';
+
+// GET /api/submissions/track/:code — public tracking by secret code
+router.get('/track/:code', async (req, res) => {
+  try {
+    const code = req.params.code.trim().toUpperCase();
+    const submission = await prisma.whistleblowerSubmission.findFirst({
+      where: { trackingCode: code },
+      select: {
+        id: true,
+        trackingCode: true,
+        title: true,
+        description: true,
+        category: true,
+        status: true,
+        createdAt: true,
+        files: true,
+      },
+    });
+
+    if (!submission) {
+      return res.status(404).json({ error: 'No submission found matching this tracking code' });
+    }
+
+    res.json(submission);
+  } catch (err) {
+    console.error('Track submission error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // POST /api/submissions — create submission (can be anonymous)
 router.post('/', optionalAuth, upload.array('files', 5), async (req, res) => {
   try {
@@ -59,9 +90,11 @@ router.post('/', optionalAuth, upload.array('files', 5), async (req, res) => {
     }
 
     const isAnonymous = anonymous === 'true' || anonymous === true;
+    const trackingCode = `WB-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
     const submission = await prisma.whistleblowerSubmission.create({
       data: {
+        trackingCode,
         title,
         description,
         category,

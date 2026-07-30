@@ -425,6 +425,7 @@ async function main() {
   // --- Whistleblower Submissions ---
   await prisma.whistleblowerSubmission.create({
     data: {
+      trackingCode: 'WB-DEMO-0001',
       submitterId: null, // anonymous
       title: 'Procurement fraud in district health office',
       description: '## Allegation\n\nThe district health office in [location redacted] has been submitting inflated invoices for medical equipment purchases. The actual equipment received is of significantly lower quality than what is invoiced.\n\n## Specific Instances\n- Invoiced 50 oxygen concentrators at BDT 2,00,000 each; received units appear to be refurbished models worth approximately BDT 50,000\n- Surgical supplies invoiced at 3x market rate\n\n## Pattern\nThis has been occurring for at least 2 fiscal years based on documents I have access to.',
@@ -435,6 +436,7 @@ async function main() {
 
   await prisma.whistleblowerSubmission.create({
     data: {
+      trackingCode: 'WB-DEMO-0002',
       submitterId: citizen.id,
       title: 'Illegal sand mining in protected riverbank area',
       description: '## Report\n\nCommercial sand mining is occurring in a designated protected area along the Padma River near [location]. Operations run nightly between 11 PM and 4 AM using heavy machinery.\n\n## Concerns\n- Riverbank erosion threatening nearby villages\n- Protected fish breeding grounds being destroyed\n- Local administration appears to be aware but not acting\n\n## Evidence Available\n- GPS coordinates of mining sites\n- Photographs of machinery and trucks\n- Estimated volume of sand removed',
@@ -445,6 +447,7 @@ async function main() {
 
   await prisma.whistleblowerSubmission.create({
     data: {
+      trackingCode: 'WB-DEMO-0003',
       submitterId: null, // anonymous
       title: 'Ghost employees on government payroll',
       description: '## Disclosure\n\nA government department maintains at least 15 "ghost employees" — individuals who are on the payroll and receive salaries but do not actually work or exist.\n\n## Details\n- Monthly salary disbursements go to bank accounts that appear to be controlled by department officials\n- Total estimated annual loss: BDT 90 lakh\n- The practice has continued for at least 3 years\n\n## Documentation\nI have copies of attendance records that show these employees as "on duty" despite never being physically present.',

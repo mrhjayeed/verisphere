@@ -28,16 +28,17 @@ model User {
 }
 
 model WhistleblowerSubmission {
-  id          String   @id @default(uuid())
-  submitterId String?
-  title       String
-  description String   @db.Text
-  category    String
-  status      String   @default("received") // received | under_review | resolved | dismissed
-  createdAt   DateTime @default(now())
+  id           String   @id @default(uuid())
+  trackingCode String?  @unique
+  submitterId  String?
+  title        String
+  description  String   @db.Text
+  category     String
+  status       String   @default("received") // received | under_review | resolved | dismissed
+  createdAt    DateTime @default(now())
 
-  submitter   User?            @relation(fields: [submitterId], references: [id])
-  files       SubmissionFile[]
+  submitter    User?            @relation(fields: [submitterId], references: [id])
+  files        SubmissionFile[]
 }
 
 model SubmissionFile {

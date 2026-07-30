@@ -22,6 +22,7 @@ import OpinionList from './pages/opinions/OpinionList';
 import OpinionDetail from './pages/opinions/OpinionDetail';
 import WhistleblowForm from './pages/whistleblow/WhistleblowForm';
 import MySubmissions from './pages/whistleblow/MySubmissions';
+import TrackSubmission from './pages/whistleblow/TrackSubmission';
 import AdminPanel from './pages/admin/AdminPanel';
 
 export default function App() {
@@ -63,6 +64,7 @@ export default function App() {
 
             {/* Whistleblowing */}
             <Route path="/whistleblow" element={<WhistleblowForm />} />
+            <Route path="/whistleblow/track" element={<TrackSubmission />} />
             <Route path="/whistleblow/mine" element={
               <ProtectedRoute><MySubmissions /></ProtectedRoute>
             } />

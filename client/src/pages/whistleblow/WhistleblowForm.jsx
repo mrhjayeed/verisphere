@@ -15,9 +15,8 @@ export default function WhistleblowForm() {
   const [category, setCategory] = useState('');
   const [anonymous, setAnonymous] = useState(true);
   const [files, setFiles] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [createdCode, setCreatedCode] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,16 +30,25 @@ export default function WhistleblowForm() {
       formData.append('anonymous', anonymous.toString());
       files.forEach((f) => formData.append('files', f));
 
-      await api.post('/submissions', formData, {
+      const res = await api.post('/submissions', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
+      if (res.data.trackingCode) {
+        setCreatedCode(res.data.trackingCode);
+      }
       setSuccess(true);
     } catch (err) {
       setError(err.response?.data?.error || 'Submission failed');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(createdCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
   };
 
   if (success) {
@@ -50,9 +58,32 @@ export default function WhistleblowForm() {
           <strong>Submission received.</strong> Your report has been securely recorded.
           {anonymous ? ' No identifying information was stored.' : ''}
         </div>
+
+        {createdCode && (
+          <div className="card" style={{ marginBottom: 'var(--space-lg)', background: 'var(--bg-alt)', textAlign: 'center' }}>
+            <p className="text-sm text-secondary" style={{ marginBottom: '0.25rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Your Secret Tracking Code
+            </p>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, fontFamily: 'monospace', letterSpacing: '0.1em', color: 'var(--accent)', margin: '0.5rem 0' }}>
+              {createdCode}
+            </div>
+            <p className="text-xs text-secondary" style={{ marginBottom: '1rem' }}>
+              Save this code! You can use it to track your investigation status anytime without logging in.
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="btn btn-sm btn-outline" onClick={handleCopyCode}>
+                {copied ? '✓ Copied to Clipboard!' : '📋 Copy Tracking Code'}
+              </button>
+              <Link to={`/whistleblow/track?code=${createdCode}`} className="btn btn-sm btn-primary">
+                Track Status Now →
+              </Link>
+            </div>
+          </div>
+        )}
+
         <p>Thank you for your courage. Your submission will be reviewed by our team.</p>
-        <div style={{ marginTop: 'var(--space-lg)', display: 'flex', gap: '0.75rem' }}>
-          <button className="btn btn-outline" onClick={() => { setSuccess(false); setTitle(''); setDescription(''); setCategory(''); setFiles([]); }}>
+        <div style={{ marginTop: 'var(--space-lg)', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button className="btn btn-outline" onClick={() => { setSuccess(false); setTitle(''); setDescription(''); setCategory(''); setFiles([]); setCreatedCode(''); }}>
             Submit Another
           </button>
           {user && !anonymous && (
@@ -73,11 +104,16 @@ export default function WhistleblowForm() {
             no identifying information is stored with your submission.
           </p>
         </div>
-        {user && (
-          <Link to="/whistleblow/mine" className="btn btn-outline">
-            My Submissions →
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Link to="/whistleblow/track" className="btn btn-outline">
+            🔍 Track by Code
           </Link>
-        )}
+          {user && (
+            <Link to="/whistleblow/mine" className="btn btn-outline">
+              My Submissions →
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="alert alert-info" style={{ marginBottom: 'var(--space-xl)' }}>
