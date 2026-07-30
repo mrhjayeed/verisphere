@@ -40,6 +40,7 @@ export default function Navbar() {
           <div className="nav-auth">
             {user ? (
               <>
+                <Link to="/whistleblow/mine" className="btn btn-sm btn-outline">My Submissions</Link>
                 {user.role === 'admin' && (
                   <Link to="/admin" className="btn btn-sm btn-outline">Admin</Link>
                 )}
@@ -83,6 +84,7 @@ export default function Navbar() {
         <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '0.5rem 0' }} />
         {user ? (
           <>
+            <Link to="/whistleblow/mine" onClick={() => setMobileOpen(false)}>My Submissions</Link>
             {user.role === 'admin' && (
               <Link to="/admin" onClick={() => setMobileOpen(false)}>Admin Panel</Link>
             )}

@@ -65,11 +65,20 @@ export default function WhistleblowForm() {
 
   return (
     <div style={{ maxWidth: '680px' }}>
-      <h1>Anonymous Whistleblowing</h1>
-      <p className="text-secondary" style={{ marginBottom: 'var(--space-xl)' }}>
-        Submit sensitive information securely. When "submit anonymously" is checked,
-        no identifying information is stored with your submission.
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1>Anonymous Whistleblowing</h1>
+          <p className="text-secondary" style={{ marginBottom: 'var(--space-xl)' }}>
+            Submit sensitive information securely. When "submit anonymously" is checked,
+            no identifying information is stored with your submission.
+          </p>
+        </div>
+        {user && (
+          <Link to="/whistleblow/mine" className="btn btn-outline">
+            My Submissions →
+          </Link>
+        )}
+      </div>
 
       <div className="alert alert-info" style={{ marginBottom: 'var(--space-xl)' }}>
         <strong>Privacy notice:</strong> Anonymous submissions store no user ID, IP address, or session data.
