@@ -264,7 +264,63 @@ small, .text-sm {
   color: var(--fg);
 }
 
-@media (max-width: 768px) {
+/* More Dropdown */
+.more-dropdown-container {
+  position: relative;
+}
+
+.more-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.more-dropdown-btn:hover,
+.more-dropdown-btn.active {
+  color: var(--fg);
+}
+
+.more-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 190px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0.35rem 0;
+  z-index: 1000;
+  animation: dropdownFadeIn 150ms ease-out;
+}
+
+.more-dropdown-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  text-decoration: none;
+  transition: background var(--transition), color var(--transition);
+}
+
+.more-dropdown-menu a:hover,
+.more-dropdown-menu a.active {
+  background: var(--bg-alt);
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
   .nav-links {
     display: none;
   }
