@@ -17,6 +17,9 @@ export default function WhistleblowForm() {
   const [files, setFiles] = useState([]);
   const [createdCode, setCreatedCode] = useState('');
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
