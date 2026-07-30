@@ -4,6 +4,8 @@ import api from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../hooks/useSocket';
 
+import MarkdownEditor from '../../components/MarkdownEditor';
+
 export default function ForumList() {
   const { user } = useAuth();
   const [threads, setThreads] = useState([]);
@@ -79,13 +81,10 @@ export default function ForumList() {
             </div>
             <div className="form-group">
               <label htmlFor="thread-body">Body (Markdown supported)</label>
-              <textarea
-                id="thread-body"
-                className="form-textarea"
+              <MarkdownEditor
                 value={body}
-                onChange={(e) => setBody(e.target.value)}
-                placeholder="Write your post..."
-                required
+                onChange={setBody}
+                placeholder="Write your post in Markdown..."
               />
             </div>
             <button type="submit" className="btn btn-primary" disabled={submitting}>

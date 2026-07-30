@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
+import MarkdownEditor from '../../components/MarkdownEditor';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../hooks/useSocket';
 
@@ -81,13 +82,11 @@ export default function ForumThread() {
         {user ? (
           <form onSubmit={handleComment} style={{ marginTop: 'var(--space-lg)' }}>
             <div className="form-group">
-              <textarea
-                className="form-textarea"
+              <MarkdownEditor
                 value={commentBody}
-                onChange={(e) => setCommentBody(e.target.value)}
-                placeholder="Write a comment (Markdown supported)..."
+                onChange={setCommentBody}
+                placeholder="Write a comment in Markdown..."
                 rows={4}
-                required
               />
             </div>
             <button type="submit" className="btn btn-primary" disabled={submitting}>

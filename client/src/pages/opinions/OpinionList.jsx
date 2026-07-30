@@ -4,6 +4,8 @@ import api from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../hooks/useSocket';
 
+import MarkdownEditor from '../../components/MarkdownEditor';
+
 export default function OpinionList() {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
@@ -75,7 +77,11 @@ export default function OpinionList() {
             </div>
             <div className="form-group">
               <label>Body (Markdown supported)</label>
-              <textarea className="form-textarea" value={body} onChange={(e) => setBody(e.target.value)} rows={8} required />
+              <MarkdownEditor
+                value={body}
+                onChange={setBody}
+                placeholder="Write your opinion in Markdown..."
+              />
             </div>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting ? 'Publishing...' : 'Publish'}
