@@ -305,25 +305,31 @@ small, .text-sm {
   cursor: not-allowed;
 }
 
-.btn-primary {
+.btn-primary,
+a.btn-primary {
   background-color: var(--accent);
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   border-color: var(--accent);
 }
 
-.btn-primary:hover:not(:disabled) {
+.btn-primary:hover:not(:disabled),
+a.btn-primary:hover:not(:disabled) {
   background-color: var(--accent-hover);
+  color: #FFFFFF !important;
   border-color: var(--accent-hover);
 }
 
-.btn-outline {
+.btn-outline,
+a.btn-outline {
   background: transparent;
   color: var(--fg);
   border-color: var(--border-dark);
 }
 
-.btn-outline:hover:not(:disabled) {
+.btn-outline:hover:not(:disabled),
+a.btn-outline:hover:not(:disabled) {
   background: var(--bg-alt);
+  color: var(--fg) !important;
   border-color: var(--fg);
 }
 
