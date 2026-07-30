@@ -9,10 +9,17 @@ const prisma = new PrismaClient();
 // GET /api/reports — list all reports
 router.get('/', async (req, res) => {
   try {
-    const { category, status, page = 1, limit = 20 } = req.query;
+    const { category, status, search, page = 1, limit = 20 } = req.query;
     const where = {};
     if (category) where.category = category;
     if (status) where.status = status;
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+      ];
+    }
 
     const [reports, total] = await Promise.all([
       prisma.civicReport.findMany({

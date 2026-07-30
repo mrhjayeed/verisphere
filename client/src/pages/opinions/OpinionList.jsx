@@ -12,13 +12,15 @@ export default function OpinionList() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    api.get('/opinions')
+    const params = search.trim() ? { search: search.trim() } : {};
+    api.get('/opinions', { params })
       .then((res) => setPosts(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [search]);
 
   useSocket('newOpinionPost', (newPost) => {
     setPosts((prev) => {
@@ -81,6 +83,20 @@ export default function OpinionList() {
           </form>
         </div>
       )}
+
+      <div className="toolbar" style={{ marginBottom: 'var(--space-xl)' }}>
+        <div className="search-input" style={{ width: '100%', maxWidth: '360px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search opinions..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
 
       {posts.length === 0 ? (
         <div className="empty-state"><h3>No opinions published yet</h3></div>

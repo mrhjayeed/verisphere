@@ -10,14 +10,17 @@ export default function KnowledgeList() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState(initialCategory);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    const params = filter !== 'all' ? { category: filter } : {};
+    const params = {};
+    if (filter !== 'all') params.category = filter;
+    if (search.trim()) params.search = search.trim();
     api.get('/knowledge', { params })
       .then((res) => setArticles(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [filter]);
+  }, [filter, search]);
 
   const formatDate = (d) => new Date(d).toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
@@ -32,12 +35,25 @@ export default function KnowledgeList() {
         <p>Learn your rights and understand civic processes</p>
       </div>
 
-      <div className="filter-group" style={{ marginBottom: 'var(--space-xl)' }}>
-        {CATEGORIES.map((c) => (
-          <button key={c} className={`filter-btn ${filter === c ? 'active' : ''}`} onClick={() => setFilter(c)}>
-            {c === 'all' ? 'All' : c.replace(/_/g, ' ')}
-          </button>
-        ))}
+      <div className="toolbar" style={{ marginBottom: 'var(--space-xl)' }}>
+        <div className="filter-group">
+          {CATEGORIES.map((c) => (
+            <button key={c} className={`filter-btn ${filter === c ? 'active' : ''}`} onClick={() => setFilter(c)}>
+              {c === 'all' ? 'All' : c.replace(/_/g, ' ')}
+            </button>
+          ))}
+        </div>
+        <div className="search-input" style={{ width: '250px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search articles..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       {articles.length === 0 ? (

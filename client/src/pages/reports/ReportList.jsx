@@ -13,10 +13,13 @@ export default function ReportList() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
 
   const fetchReports = async () => {
     try {
-      const params = filter !== 'all' ? { category: filter } : {};
+      const params = {};
+      if (filter !== 'all') params.category = filter;
+      if (search.trim()) params.search = search.trim();
       const res = await api.get('/reports', { params });
       setReports(res.data.reports);
     } catch (err) {
@@ -28,7 +31,7 @@ export default function ReportList() {
 
   useEffect(() => {
     fetchReports();
-  }, [filter]);
+  }, [filter, search]);
 
   useSocket('newReport', (report) => {
     setReports((prev) => {
@@ -59,16 +62,29 @@ export default function ReportList() {
         </div>
       </div>
 
-      <div className="filter-group" style={{ marginBottom: 'var(--space-xl)' }}>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            className={`filter-btn ${filter === cat ? 'active' : ''}`}
-            onClick={() => setFilter(cat)}
-          >
-            {cat === 'all' ? 'All' : cat.replace(/_/g, ' ')}
-          </button>
-        ))}
+      <div className="toolbar">
+        <div className="filter-group">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              className={`filter-btn ${filter === cat ? 'active' : ''}`}
+              onClick={() => setFilter(cat)}
+            >
+              {cat === 'all' ? 'All' : cat.replace(/_/g, ' ')}
+            </button>
+          ))}
+        </div>
+        <div className="search-input" style={{ width: '250px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search reports..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       {reports.length === 0 ? (

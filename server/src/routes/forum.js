@@ -8,7 +8,17 @@ const prisma = new PrismaClient();
 // GET /api/forum — list threads
 router.get('/', async (req, res) => {
   try {
+    const { search } = req.query;
+    const where = {};
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { body: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
     const threads = await prisma.forumThread.findMany({
+      where,
       include: {
         author: { select: { id: true, displayName: true } },
         _count: { select: { comments: true } },

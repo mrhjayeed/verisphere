@@ -12,13 +12,15 @@ export default function ForumList() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    api.get('/forum')
+    const params = search.trim() ? { search: search.trim() } : {};
+    api.get('/forum', { params })
       .then((res) => setThreads(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [search]);
 
   useSocket('newForumThread', (thread) => {
     setThreads((prev) => [thread, ...prev]);
@@ -92,6 +94,20 @@ export default function ForumList() {
           </form>
         </div>
       )}
+
+      <div className="toolbar" style={{ marginBottom: 'var(--space-xl)' }}>
+        <div className="search-input" style={{ width: '100%', maxWidth: '360px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search forum threads..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
 
       {threads.length === 0 ? (
         <div className="empty-state">

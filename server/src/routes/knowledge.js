@@ -8,8 +8,15 @@ const prisma = new PrismaClient();
 // GET /api/knowledge — list articles
 router.get('/', async (req, res) => {
   try {
-    const { category } = req.query;
-    const where = category ? { category } : {};
+    const { category, search } = req.query;
+    const where = {};
+    if (category) where.category = category;
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { content: { contains: search, mode: 'insensitive' } },
+      ];
+    }
 
     const articles = await prisma.knowledgeArticle.findMany({
       where,
