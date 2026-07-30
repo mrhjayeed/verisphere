@@ -77,6 +77,9 @@ router.post('/', authenticate, upload.single('file'), async (req, res) => {
       },
     });
 
+    const io = req.app.get('io');
+    if (io) io.emit('newEvidence', item);
+
     res.status(201).json(item);
   } catch (err) {
     console.error('Create evidence error:', err);

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import StatusBadge from '../../components/StatusBadge';
+import { useSocket } from '../../hooks/useSocket';
 
 export default function ReportDetail() {
   const { id } = useParams();
@@ -15,6 +16,12 @@ export default function ReportDetail() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  useSocket('reportStatusUpdated', (updated) => {
+    if (updated.id === id) {
+      setReport((prev) => prev ? { ...prev, status: updated.status } : prev);
+    }
+  });
 
   if (loading) return <div className="loading">Loading report...</div>;
   if (!report) return <div className="empty-state"><h3>Report not found</h3></div>;

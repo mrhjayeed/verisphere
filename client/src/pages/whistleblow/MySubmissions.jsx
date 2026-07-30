@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/client';
 import StatusBadge from '../../components/StatusBadge';
+import { useSocket } from '../../hooks/useSocket';
 
 export default function MySubmissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -13,6 +14,10 @@ export default function MySubmissions() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useSocket('submissionStatusUpdated', (updated) => {
+    setSubmissions((prev) => prev.map((s) => s.id === updated.id ? { ...s, status: updated.status } : s));
+  });
 
   const formatDate = (d) => new Date(d).toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',

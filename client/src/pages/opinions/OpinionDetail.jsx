@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../hooks/useSocket';
 
 export default function OpinionDetail() {
   const { id } = useParams();
@@ -18,6 +19,12 @@ export default function OpinionDetail() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  useSocket('newOpinionComment', (data) => {
+    if (data.opinionId === id) {
+      setPost((prev) => prev ? { ...prev, comments: [...prev.comments, data.comment] } : prev);
+    }
+  });
 
   const handleComment = async (e) => {
     e.preventDefault();

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/client';
 import StatusBadge from '../../components/StatusBadge';
 import MarkdownEditor from '../../components/MarkdownEditor';
+import { useSocket } from '../../hooks/useSocket';
 
 export default function AdminPanel() {
   const [tab, setTab] = useState('submissions');
@@ -38,6 +39,14 @@ function SubmissionsTab() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useSocket('newSubmission', (newSub) => {
+    setSubmissions((prev) => [newSub, ...prev.filter(s => s.id !== newSub.id)]);
+  });
+
+  useSocket('submissionStatusUpdated', (updated) => {
+    setSubmissions((prev) => prev.map((s) => s.id === updated.id ? { ...s, status: updated.status } : s));
+  });
 
   const updateStatus = async (id, status) => {
     try {
@@ -102,6 +111,14 @@ function ReportsTab() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useSocket('newReport', (newReport) => {
+    setReports((prev) => [newReport, ...prev.filter(r => r.id !== newReport.id)]);
+  });
+
+  useSocket('reportStatusUpdated', (updated) => {
+    setReports((prev) => prev.map((r) => r.id === updated.id ? { ...r, status: updated.status } : r));
+  });
 
   const updateStatus = async (id, status) => {
     try {

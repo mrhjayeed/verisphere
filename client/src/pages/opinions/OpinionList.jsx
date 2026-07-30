@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../hooks/useSocket';
 
 export default function OpinionList() {
   const { user } = useAuth();
@@ -18,6 +19,10 @@ export default function OpinionList() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useSocket('newOpinionPost', (newPost) => {
+    setPosts((prev) => [newPost, ...prev]);
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

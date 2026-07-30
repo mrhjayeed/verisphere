@@ -34,6 +34,10 @@ export default function ReportList() {
     setReports((prev) => [report, ...prev]);
   });
 
+  useSocket('reportStatusUpdated', (updated) => {
+    setReports((prev) => prev.map((r) => r.id === updated.id ? { ...r, status: updated.status } : r));
+  });
+
   const formatDate = (d) => new Date(d).toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
   });

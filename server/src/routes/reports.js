@@ -122,7 +122,14 @@ router.patch('/:id/status', authenticate, requireAdmin, async (req, res) => {
     const report = await prisma.civicReport.update({
       where: { id: req.params.id },
       data: { status },
+      include: {
+        author: { select: { id: true, displayName: true } },
+        files: true,
+      },
     });
+
+    const io = req.app.get('io');
+    if (io) io.emit('reportStatusUpdated', report);
 
     res.json(report);
   } catch (err) {

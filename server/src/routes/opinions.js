@@ -61,6 +61,9 @@ router.post('/', authenticate, async (req, res) => {
       },
     });
 
+    const io = req.app.get('io');
+    if (io) io.emit('newOpinionPost', post);
+
     res.status(201).json(post);
   } catch (err) {
     console.error('Create opinion error:', err);
@@ -84,6 +87,9 @@ router.post('/:id/comments', authenticate, async (req, res) => {
         author: { select: { id: true, displayName: true } },
       },
     });
+
+    const io = req.app.get('io');
+    if (io) io.emit('newOpinionComment', { opinionId: req.params.id, comment });
 
     res.status(201).json(comment);
   } catch (err) {

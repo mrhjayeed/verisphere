@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import FileUpload from '../../components/FileUpload';
+import { useSocket } from '../../hooks/useSocket';
 
 const CATEGORIES = ['environment', 'corruption', 'infrastructure', 'governance', 'election', 'public_service', 'human_rights', 'other'];
 
@@ -29,6 +30,10 @@ export default function EvidenceArchive() {
   useEffect(() => {
     fetchItems();
   }, [filter, search]);
+
+  useSocket('newEvidence', (newItem) => {
+    setItems((prev) => [newItem, ...prev]);
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

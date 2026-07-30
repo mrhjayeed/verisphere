@@ -85,12 +85,15 @@ router.post('/', optionalAuth, upload.array('files', 5), async (req, res) => {
 
     const fullSubmission = await prisma.whistleblowerSubmission.findUnique({
       where: { id: submission.id },
-      include: { files: true },
+      include: {
+        submitter: { select: { id: true, displayName: true } },
+        files: true,
+      },
     });
 
-    // Emit realtime event (without identifying info)
+    // Emit realtime event
     const io = req.app.get('io');
-    if (io) io.emit('newSubmission', { id: submission.id, title: submission.title, category: submission.category, status: submission.status });
+    if (io) io.emit('newSubmission', fullSubmission);
 
     res.status(201).json(fullSubmission);
   } catch (err) {
@@ -111,7 +114,14 @@ router.patch('/:id/status', authenticate, requireAdmin, async (req, res) => {
     const submission = await prisma.whistleblowerSubmission.update({
       where: { id: req.params.id },
       data: { status },
+      include: {
+        submitter: { select: { id: true, displayName: true } },
+        files: true,
+      },
     });
+
+    const io = req.app.get('io');
+    if (io) io.emit('submissionStatusUpdated', submission);
 
     res.json(submission);
   } catch (err) {
