@@ -135,96 +135,86 @@ async function main() {
   // --- Civic Reports ---
   const reportCategories = ['corruption', 'abuse_of_authority', 'human_rights', 'environment', 'public_service', 'misuse_of_resources', 'infrastructure', 'election'];
 
-  const reports = await Promise.all([
-    prisma.civicReport.create({
-      data: {
-        authorId: citizen.id,
-        title: 'Irregular permit approvals at Dhaka North building authority',
-        description: '## Summary\nBuilding permits are being approved without proper inspection for structures exceeding 8 stories in Uttara sector 11. Three buildings in the area have visible structural concerns.\n\n## Details\n- Permits issued within 48 hours of application (normal processing is 30 days)\n- No record of site inspections in public registry\n- Affected buildings: Plot 15, 23, and 41 in Sector 11\n\n## Evidence\nRTI request filed on March 15 — response overdue by 45 days.',
-        category: 'corruption',
-        location: 'Uttara, Dhaka North',
-        incidentDate: new Date('2026-03-10'),
-        status: 'under_review',
-      },
-    }),
-    prisma.civicReport.create({
-      data: {
-        authorId: citizen2.id,
-        title: 'Untreated industrial waste discharge into Buriganga River',
-        description: '## Observation\nAt least three tannery operations near Hazaribagh continue to discharge untreated effluent directly into the Buriganga. Despite the 2017 relocation order, remnant operations persist.\n\n## Environmental Impact\n- Water color visibly dark/discolored for 500m stretch\n- Fish populations absent in affected area\n- Nearby residents report skin conditions\n\n## Documentation\nPhotographs taken on June 1 and June 15 showing discharge points.',
-        category: 'environment',
-        location: 'Hazaribagh, Dhaka',
-        incidentDate: new Date('2026-06-01'),
-        status: 'received',
-      },
-    }),
-    prisma.civicReport.create({
-      data: {
-        authorId: citizen.id,
-        title: 'Public hospital medicine shortage — Rajshahi Medical College',
-        description: '## Issue\nEssential medicines listed on the government\'s essential drug list have been unavailable at Rajshahi Medical College Hospital pharmacy for the past 3 months. Patients are being directed to purchase from private pharmacies.\n\n## Affected Medicines\n- Metformin (diabetes)\n- Amlodipine (hypertension)\n- Basic antibiotics (Amoxicillin)\n\n## Patient Impact\nLow-income patients who rely on free hospital medicines are unable to afford private pharmacy prices.',
-        category: 'public_service',
-        location: 'Rajshahi Medical College Hospital',
-        incidentDate: new Date('2026-04-20'),
-        status: 'resolved',
-      },
-    }),
-    prisma.civicReport.create({
-      data: {
-        authorId: null,
-        title: 'Road construction funds misappropriation in Sylhet',
-        description: '## Allegation\nA portion of funds allocated for Sylhet-Sunamganj highway repair appear to have been diverted. The completed road section shows significantly lower quality than specifications.\n\n## Evidence\n- Road surface cracking within 6 months of completion\n- Actual road width measures 18ft vs. contracted 24ft\n- Local contractors report being paid only 60% of quoted amounts',
-        category: 'misuse_of_resources',
-        location: 'Sylhet-Sunamganj Highway',
-        incidentDate: new Date('2026-02-15'),
-        status: 'under_review',
-      },
-    }),
-    prisma.civicReport.create({
-      data: {
-        authorId: citizen2.id,
-        title: 'Voter intimidation reported during municipal by-election',
-        description: '## Incident\nMultiple voters in Ward 7 reported being approached by unidentified individuals outside polling stations who attempted to influence their vote through implicit threats.\n\n## Details\n- Incidents reported between 10 AM and 2 PM on election day\n- At least 12 voters filed verbal complaints with presiding officers\n- No formal FIR filed as of this report',
-        category: 'election',
-        location: 'Ward 7, Chattogram City Corporation',
-        incidentDate: new Date('2026-05-12'),
-        status: 'received',
-      },
-    }),
-    prisma.civicReport.create({
-      data: {
-        authorId: citizen.id,
-        title: 'Police excessive force during peaceful demonstration',
-        description: '## Incident\nDuring a licensed peaceful demonstration by garment workers demanding unpaid wages, police used tear gas and baton charges without provocation or warning.\n\n## Details\n- Demonstration had valid permission from local authority\n- Approximately 200 workers were participating peacefully\n- 15 workers required medical treatment\n- Video evidence available from multiple bystanders',
-        category: 'human_rights',
-        location: 'Ashulia Industrial Area, Dhaka',
-        incidentDate: new Date('2026-06-20'),
-        status: 'received',
-      },
-    }),
-    prisma.civicReport.create({
-      data: {
-        authorId: null,
-        title: 'Collapsed drainage system causing flooding in residential area',
-        description: '## Problem\nThe drainage system in Mirpur Section 12 has been non-functional for 8 months, causing severe waterlogging during every rain event.\n\n## Impact\n- 500+ households affected\n- Water enters ground floor residences during moderate rainfall\n- Multiple written complaints to City Corporation have gone unanswered\n- Health concerns: mosquito breeding, contaminated water exposure',
-        category: 'infrastructure',
-        location: 'Mirpur Section 12, Dhaka',
-        incidentDate: new Date('2026-01-10'),
-        status: 'received',
-      },
-    }),
-    prisma.civicReport.create({
-      data: {
-        authorId: citizen2.id,
-        title: 'Unauthorized use of government vehicles for personal travel',
-        description: '## Observation\nGovernment-plate vehicles assigned to the Department of Education are regularly observed at private events and personal errands during office hours.\n\n## Evidence\n- Vehicle registration numbers documented on 5 separate occasions\n- Locations include shopping malls, private residences, and wedding venues\n- Pattern observed over 3-month period (March-May 2026)',
-        category: 'abuse_of_authority',
-        location: 'Dhaka Division',
-        incidentDate: new Date('2026-05-30'),
-        status: 'received',
-      },
-    }),
-  ]);
+  const reportsData = [
+    {
+      authorId: citizen.id,
+      title: 'Irregular permit approvals at Dhaka North building authority',
+      description: '## Summary\nBuilding permits are being approved without proper inspection for structures exceeding 8 stories in Uttara sector 11. Three buildings in the area have visible structural concerns.\n\n## Details\n- Permits issued within 48 hours of application (normal processing is 30 days)\n- No record of site inspections in public registry\n- Affected buildings: Plot 15, 23, and 41 in Sector 11\n\n## Evidence\nRTI request filed on March 15 — response overdue by 45 days.',
+      category: 'corruption',
+      location: 'Uttara, Dhaka North',
+      incidentDate: new Date('2026-03-10'),
+      status: 'under_review',
+    },
+    {
+      authorId: citizen2.id,
+      title: 'Untreated industrial waste discharge into Buriganga River',
+      description: '## Observation\nAt least three tannery operations near Hazaribagh continue to discharge untreated effluent directly into the Buriganga. Despite the 2017 relocation order, remnant operations persist.\n\n## Environmental Impact\n- Water color visibly dark/discolored for 500m stretch\n- Fish populations absent in affected area\n- Nearby residents report skin conditions\n\n## Documentation\nPhotographs taken on June 1 and June 15 showing discharge points.',
+      category: 'environment',
+      location: 'Hazaribagh, Dhaka',
+      incidentDate: new Date('2026-06-01'),
+      status: 'received',
+    },
+    {
+      authorId: citizen.id,
+      title: 'Public hospital medicine shortage — Rajshahi Medical College',
+      description: '## Issue\nEssential medicines listed on the government\'s essential drug list have been unavailable at Rajshahi Medical College Hospital pharmacy for the past 3 months. Patients are being directed to purchase from private pharmacies.\n\n## Affected Medicines\n- Metformin (diabetes)\n- Amlodipine (hypertension)\n- Basic antibiotics (Amoxicillin)\n\n## Patient Impact\nLow-income patients who rely on free hospital medicines are unable to afford private pharmacy prices.',
+      category: 'public_service',
+      location: 'Rajshahi Medical College Hospital',
+      incidentDate: new Date('2026-04-20'),
+      status: 'resolved',
+    },
+    {
+      authorId: null,
+      title: 'Road construction funds misappropriation in Sylhet',
+      description: '## Allegation\nA portion of funds allocated for Sylhet-Sunamganj highway repair appear to have been diverted. The completed road section shows significantly lower quality than specifications.\n\n## Evidence\n- Road surface cracking within 6 months of completion\n- Actual road width measures 18ft vs. contracted 24ft\n- Local contractors report being paid only 60% of quoted amounts',
+      category: 'misuse_of_resources',
+      location: 'Sylhet-Sunamganj Highway',
+      incidentDate: new Date('2026-02-15'),
+      status: 'under_review',
+    },
+    {
+      authorId: citizen2.id,
+      title: 'Voter intimidation reported during municipal by-election',
+      description: '## Incident\nMultiple voters in Ward 7 reported being approached by unidentified individuals outside polling stations who attempted to influence their vote through implicit threats.\n\n## Details\n- Incidents reported between 10 AM and 2 PM on election day\n- At least 12 voters filed verbal complaints with presiding officers\n- No formal FIR filed as of this report',
+      category: 'election',
+      location: 'Ward 7, Chattogram City Corporation',
+      incidentDate: new Date('2026-05-12'),
+      status: 'received',
+    },
+    {
+      authorId: citizen.id,
+      title: 'Police excessive force during peaceful demonstration',
+      description: '## Incident\nDuring a licensed peaceful demonstration by garment workers demanding unpaid wages, police used tear gas and baton charges without provocation or warning.\n\n## Details\n- Demonstration had valid permission from local authority\n- Approximately 200 workers were participating peacefully\n- 15 workers required medical treatment\n- Video evidence available from multiple bystanders',
+      category: 'human_rights',
+      location: 'Ashulia Industrial Area, Dhaka',
+      incidentDate: new Date('2026-06-20'),
+      status: 'received',
+    },
+    {
+      authorId: null,
+      title: 'Collapsed drainage system causing flooding in residential area',
+      description: '## Problem\nThe drainage system in Mirpur Section 12 has been non-functional for 8 months, causing severe waterlogging during every rain event.\n\n## Impact\n- 500+ households affected\n- Water enters ground floor residences during moderate rainfall\n- Multiple written complaints to City Corporation have gone unanswered\n- Health concerns: mosquito breeding, contaminated water exposure',
+      category: 'infrastructure',
+      location: 'Mirpur Section 12, Dhaka',
+      incidentDate: new Date('2026-01-10'),
+      status: 'received',
+    },
+    {
+      authorId: citizen2.id,
+      title: 'Unauthorized use of government vehicles for personal travel',
+      description: '## Observation\nGovernment-plate vehicles assigned to the Department of Education are regularly observed at private events and personal errands during office hours.\n\n## Evidence\n- Vehicle registration numbers documented on 5 separate occasions\n- Locations include shopping malls, private residences, and wedding venues\n- Pattern observed over 3-month period (March-May 2026)',
+      category: 'abuse_of_authority',
+      location: 'Dhaka Division',
+      incidentDate: new Date('2026-05-30'),
+      status: 'received',
+    },
+  ];
+
+  const reports = [];
+  for (const data of reportsData) {
+    const report = await prisma.civicReport.create({ data });
+    reports.push(report);
+  }
 
   console.log('  ✓ Civic reports created');
 
