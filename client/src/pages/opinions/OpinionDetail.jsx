@@ -22,7 +22,11 @@ export default function OpinionDetail() {
 
   useSocket('newOpinionComment', (data) => {
     if (data.opinionId === id) {
-      setPost((prev) => prev ? { ...prev, comments: [...prev.comments, data.comment] } : prev);
+      setPost((prev) => {
+        if (!prev) return prev;
+        if (prev.comments.some((c) => c.id === data.comment.id)) return prev;
+        return { ...prev, comments: [...prev.comments, data.comment] };
+      });
     }
   });
 
@@ -30,8 +34,7 @@ export default function OpinionDetail() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await api.post(`/opinions/${id}/comments`, { body: commentBody });
-      setPost((prev) => ({ ...prev, comments: [...prev.comments, res.data] }));
+      await api.post(`/opinions/${id}/comments`, { body: commentBody });
       setCommentBody('');
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to post comment');

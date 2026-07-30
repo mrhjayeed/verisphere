@@ -21,15 +21,17 @@ export default function OpinionList() {
   }, []);
 
   useSocket('newOpinionPost', (newPost) => {
-    setPosts((prev) => [newPost, ...prev]);
+    setPosts((prev) => {
+      if (prev.some((p) => p.id === newPost.id)) return prev;
+      return [newPost, ...prev];
+    });
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await api.post('/opinions', { title, body });
-      setPosts((prev) => [res.data, ...prev]);
+      await api.post('/opinions', { title, body });
       setTitle('');
       setBody('');
       setShowForm(false);

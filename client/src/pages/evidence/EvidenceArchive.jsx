@@ -32,7 +32,10 @@ export default function EvidenceArchive() {
   }, [filter, search]);
 
   useSocket('newEvidence', (newItem) => {
-    setItems((prev) => [newItem, ...prev]);
+    setItems((prev) => {
+      if (prev.some((item) => item.id === newItem.id)) return prev;
+      return [newItem, ...prev];
+    });
   });
 
   const handleSubmit = async (e) => {

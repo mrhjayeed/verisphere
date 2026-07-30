@@ -22,7 +22,11 @@ export default function ForumThread() {
 
   useSocket('newForumComment', (data) => {
     if (data.threadId === id) {
-      setThread((prev) => prev ? { ...prev, comments: [...prev.comments, data.comment] } : prev);
+      setThread((prev) => {
+        if (!prev) return prev;
+        if (prev.comments.some((c) => c.id === data.comment.id)) return prev;
+        return { ...prev, comments: [...prev.comments, data.comment] };
+      });
     }
   });
 

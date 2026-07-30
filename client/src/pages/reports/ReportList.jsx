@@ -31,7 +31,10 @@ export default function ReportList() {
   }, [filter]);
 
   useSocket('newReport', (report) => {
-    setReports((prev) => [report, ...prev]);
+    setReports((prev) => {
+      if (prev.some((r) => r.id === report.id)) return prev;
+      return [report, ...prev];
+    });
   });
 
   useSocket('reportStatusUpdated', (updated) => {
