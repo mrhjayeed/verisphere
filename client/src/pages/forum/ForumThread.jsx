@@ -35,8 +35,15 @@ export default function ForumThread() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await api.post(`/forum/${id}/comments`, { body: commentBody });
+      const res = await api.post(`/forum/${id}/comments`, { body: commentBody });
       setCommentBody('');
+      if (res.data) {
+        setThread((prev) => {
+          if (!prev) return prev;
+          if (prev.comments.some((c) => c.id === res.data.id)) return prev;
+          return { ...prev, comments: [...prev.comments, res.data] };
+        });
+      }
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to post comment');
     } finally {
