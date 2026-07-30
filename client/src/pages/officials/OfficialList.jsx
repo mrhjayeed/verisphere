@@ -1,19 +1,28 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/client';
+import { useSocket } from '../../hooks/useSocket';
 
 export default function OfficialList() {
   const [officials, setOfficials] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchOfficials = () => {
     const params = search ? { search } : {};
     api.get('/officials', { params })
       .then((res) => setOfficials(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchOfficials();
   }, [search]);
+
+  useSocket('officialUpdated', () => {
+    fetchOfficials();
+  });
 
   if (loading) return <div className="loading">Loading officials...</div>;
 

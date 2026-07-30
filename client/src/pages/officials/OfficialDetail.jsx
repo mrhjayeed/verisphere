@@ -5,6 +5,7 @@ import MarkdownRenderer from '../../components/MarkdownRenderer';
 import MarkdownEditor from '../../components/MarkdownEditor';
 import StatusBadge from '../../components/StatusBadge';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../hooks/useSocket';
 
 export default function OfficialDetail() {
   const { id } = useParams();
@@ -12,6 +13,23 @@ export default function OfficialDetail() {
   const isAdmin = user?.role === 'admin';
   const [official, setOfficial] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const fetchOfficial = () => {
+    api.get(`/officials/${id}`)
+      .then((res) => setOfficial(res.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchOfficial();
+  }, [id]);
+
+  useSocket('officialUpdated', (data) => {
+    if (!data?.officialId || data.officialId === id) {
+      fetchOfficial();
+    }
+  });
 
   // Profile Edit Form State
   const [editingProfile, setEditingProfile] = useState(false);
@@ -49,16 +67,7 @@ export default function OfficialDetail() {
   const [showControversyForm, setShowControversyForm] = useState(false);
   const [controversyForm, setControversyForm] = useState({ title: '', description: '', sourceUrl: '' });
 
-  const fetchOfficial = () => {
-    api.get(`/officials/${id}`)
-      .then((res) => setOfficial(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  };
 
-  useEffect(() => {
-    fetchOfficial();
-  }, [id]);
 
   const handleUpdatePromiseStatus = async (promiseId, newStatus) => {
     try {

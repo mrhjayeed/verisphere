@@ -103,6 +103,9 @@ router.put('/:id', authenticate, requireAdmin, upload.single('photo'), async (re
       data,
     });
 
+    const io = req.app.get('io');
+    if (io) io.emit('officialUpdated', { officialId: official.id });
+
     res.json(official);
   } catch (err) {
     console.error('Update official error:', err);
@@ -123,6 +126,10 @@ router.post('/:id/promises', authenticate, requireAdmin, async (req, res) => {
         status: status || 'pending',
       },
     });
+
+    const io = req.app.get('io');
+    if (io) io.emit('officialUpdated', { officialId: req.params.id });
+
     res.status(201).json(promise);
   } catch (err) {
     console.error('Create promise error:', err);
@@ -141,6 +148,10 @@ router.patch('/promises/:id', authenticate, requireAdmin, async (req, res) => {
       where: { id: req.params.id },
       data: { status },
     });
+
+    const io = req.app.get('io');
+    if (io) io.emit('officialUpdated', { officialId: promise.officialId });
+
     res.json(promise);
   } catch (err) {
     console.error('Update promise error:', err);
@@ -163,6 +174,10 @@ router.post('/:id/controversies', authenticate, requireAdmin, async (req, res) =
         sourceUrl: sourceUrl || null,
       },
     });
+
+    const io = req.app.get('io');
+    if (io) io.emit('officialUpdated', { officialId: req.params.id });
+
     res.status(201).json(controversy);
   } catch (err) {
     console.error('Create controversy error:', err);
@@ -183,6 +198,10 @@ router.post('/:id/complaints', authenticate, async (req, res) => {
         reportId: reportId || null,
       },
     });
+
+    const io = req.app.get('io');
+    if (io) io.emit('officialUpdated', { officialId: req.params.id });
+
     res.status(201).json(complaint);
   } catch (err) {
     console.error('Create complaint error:', err);
