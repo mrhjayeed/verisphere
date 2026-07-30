@@ -65,8 +65,6 @@ const STEPS = [
 ];
 
 export default function Home() {
-  const navigate = useNavigate();
-  const [quickCode, setQuickCode] = useState('');
   const [stats, setStats] = useState({ reports: 0, officials: 0, evidence: 0 });
   const [recentReports, setRecentReports] = useState([]);
   const [featuredOfficials, setFeaturedOfficials] = useState([]);
@@ -96,13 +94,6 @@ export default function Home() {
       .catch(console.error);
   }, []);
 
-  const handleTrackSubmit = (e) => {
-    e.preventDefault();
-    if (quickCode.trim()) {
-      navigate(`/whistleblow/track?code=${encodeURIComponent(quickCode.trim())}`);
-    }
-  };
-
   return (
     <div>
       {/* Hero Section */}
@@ -116,31 +107,10 @@ export default function Home() {
           Every voice counts. Every report matters.
         </p>
 
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link to="/reports" className="btn btn-primary">Browse Reports</Link>
           <Link to="/whistleblow" className="btn btn-outline">Whistleblow Anonymously</Link>
           <Link to="/signup" className="btn btn-outline">Join the Community</Link>
-        </div>
-
-        {/* Quick Whistleblower Code Tracker */}
-        <div className="card" style={{ maxWidth: '520px', margin: '0 auto', textAlign: 'left', background: 'var(--bg-alt)' }}>
-          <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem', color: 'var(--fg-secondary)' }}>
-            🔒 Have a Secret Whistleblower Tracking Code?
-          </label>
-          <form onSubmit={handleTrackSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              type="text"
-              className="form-input"
-              style={{ flex: 1, fontFamily: 'monospace', textTransform: 'uppercase' }}
-              placeholder="e.g. VS-A1B2C3D4"
-              value={quickCode}
-              onChange={(e) => setQuickCode(e.target.value)}
-              required
-            />
-            <button type="submit" className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
-              Track Status →
-            </button>
-          </form>
         </div>
       </div>
 
