@@ -63,7 +63,18 @@ export default function Navbar() {
               </li>
             ))}
 
-            {/* More Dropdown */}
+            {SECONDARY_NAV.map(({ path, label }) => (
+              <li key={path} className="nav-item-secondary">
+                <Link
+                  to={path}
+                  className={location.pathname.startsWith(path) ? 'active' : ''}
+                >
+                  {label.replace(' Archive', '').replace(' Hub', '').replace(' Portal', '')}
+                </Link>
+              </li>
+            ))}
+
+            {/* More Dropdown (Visible on medium screens) */}
             <li className="more-dropdown-container" ref={moreDropdownRef}>
               <button
                 type="button"
