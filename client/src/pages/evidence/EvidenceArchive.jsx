@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import FileUpload from '../../components/FileUpload';
@@ -140,22 +141,22 @@ export default function EvidenceArchive() {
       ) : (
         <div className="grid-2">
           {items.map((item) => (
-            <div key={item.id} className="card">
+            <Link key={item.id} to={`/evidence/${item.id}`} className="card card-link">
               {isImage(item.fileType) && (
                 <img src={item.filePath} alt={item.title} style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 2, marginBottom: '0.75rem' }} />
               )}
               <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>{item.title}</h3>
-              {item.description && <p className="text-sm text-secondary" style={{ marginBottom: '0.5rem' }}>{item.description}</p>}
+              {item.description && <p className="text-sm text-secondary" style={{ marginBottom: '0.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.description}</p>}
               <div className="card-meta">
                 <span className="badge badge-category">{item.category.replace(/_/g, ' ')}</span>
                 <span>{formatDate(item.createdAt)}</span>
-                <span>by {item.uploadedBy.displayName}</span>
+                <span>by {item.uploadedBy?.displayName || 'Anonymous'}</span>
               </div>
               {item.sourceRef && <p className="text-xs text-tertiary" style={{ marginTop: '0.5rem', marginBottom: 0 }}>Source: {item.sourceRef}</p>}
-              <a href={item.filePath} target="_blank" rel="noopener noreferrer" className="text-sm" style={{ marginTop: '0.5rem', display: 'inline-block' }}>
-                View {isImage(item.fileType) ? 'full image' : item.originalName} →
-              </a>
-            </div>
+              <span className="text-sm" style={{ marginTop: '0.5rem', display: 'inline-block', color: 'var(--accent)' }}>
+                View full evidence →
+              </span>
+            </Link>
           ))}
         </div>
       )}

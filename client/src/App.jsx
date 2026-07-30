@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard';
 import ForumList from './pages/forum/ForumList';
 import ForumThread from './pages/forum/ForumThread';
 import EvidenceArchive from './pages/evidence/EvidenceArchive';
+import EvidenceDetail from './pages/evidence/EvidenceDetail';
 import KnowledgeList from './pages/knowledge/KnowledgeList';
 import KnowledgeArticle from './pages/knowledge/KnowledgeArticle';
 import OpinionList from './pages/opinions/OpinionList';
@@ -53,6 +54,7 @@ export default function App() {
 
             {/* Evidence */}
             <Route path="/evidence" element={<EvidenceArchive />} />
+            <Route path="/evidence/:id" element={<EvidenceDetail />} />
 
             {/* Knowledge Hub */}
             <Route path="/knowledge" element={<KnowledgeList />} />
