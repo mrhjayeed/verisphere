@@ -1245,3 +1245,136 @@ tr:hover td {
 .controversy-item h4 {
   margin-bottom: var(--space-xs);
 }
+
+/* ============================================
+   User Dropdown Menu
+   ============================================ */
+
+.user-dropdown-container {
+  position: relative;
+}
+
+.user-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.user-dropdown-btn:hover {
+  border-color: var(--fg-secondary);
+  background: var(--bg-alt);
+}
+
+.admin-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--accent);
+  color: #FFFFFF;
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+}
+
+.chevron-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--fg-secondary);
+  transition: transform var(--transition);
+}
+
+.chevron-icon.open {
+  transform: rotate(180deg);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 200px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0.35rem 0;
+  z-index: 1000;
+  animation: dropdownFadeIn 150ms ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-dropdown-menu a,
+.user-dropdown-menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fg);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition);
+  text-decoration: none;
+}
+
+.user-dropdown-menu a:hover,
+.user-dropdown-menu button:hover {
+  background: var(--bg-alt);
+  color: var(--accent);
+}
+
+.user-dropdown-menu svg {
+  width: 16px;
+  height: 16px;
+  color: var(--fg-secondary);
+  flex-shrink: 0;
+}
+
+.user-dropdown-menu a:hover svg,
+.user-dropdown-menu button:hover svg {
+  color: var(--accent);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.35rem 0;
+}
+
+.dropdown-logout-btn {
+  color: var(--danger) !important;
+}
+
+.dropdown-logout-btn:hover {
+  background: var(--danger-bg) !important;
+  color: var(--danger) !important;
+}
+
+.dropdown-logout-btn svg {
+  color: var(--danger) !important;
+}
+
