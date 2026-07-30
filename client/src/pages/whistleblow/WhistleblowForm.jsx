@@ -1,0 +1,118 @@
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import api from '../../api/client';
+import MarkdownEditor from '../../components/MarkdownEditor';
+import FileUpload from '../../components/FileUpload';
+import { useAuth } from '../../context/AuthContext';
+
+const CATEGORIES = ['corruption', 'fraud', 'abuse_of_power', 'environmental', 'financial', 'safety', 'other'];
+
+export default function WhistleblowForm() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [anonymous, setAnonymous] = useState(true);
+  const [files, setFiles] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('category', category);
+      formData.append('anonymous', anonymous.toString());
+      files.forEach((f) => formData.append('files', f));
+
+      await api.post('/submissions', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      setSuccess(true);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Submission failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div style={{ maxWidth: '580px' }}>
+        <div className="alert alert-success">
+          <strong>Submission received.</strong> Your report has been securely recorded.
+          {anonymous ? ' No identifying information was stored.' : ''}
+        </div>
+        <p>Thank you for your courage. Your submission will be reviewed by our team.</p>
+        <div style={{ marginTop: 'var(--space-lg)', display: 'flex', gap: '0.75rem' }}>
+          <button className="btn btn-outline" onClick={() => { setSuccess(false); setTitle(''); setDescription(''); setCategory(''); setFiles([]); }}>
+            Submit Another
+          </button>
+          {user && !anonymous && (
+            <Link to="/whistleblow/mine" className="btn btn-outline">View My Submissions</Link>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: '680px' }}>
+      <h1>Anonymous Whistleblowing</h1>
+      <p className="text-secondary" style={{ marginBottom: 'var(--space-xl)' }}>
+        Submit sensitive information securely. When "submit anonymously" is checked,
+        no identifying information is stored with your submission.
+      </p>
+
+      <div className="alert alert-info" style={{ marginBottom: 'var(--space-xl)' }}>
+        <strong>Privacy notice:</strong> Anonymous submissions store no user ID, IP address, or session data.
+        Your submission cannot be traced back to you.
+      </div>
+
+      {error && <div className="alert alert-error">{error}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Title</label>
+          <input className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Brief description" required />
+        </div>
+
+        <div className="form-group">
+          <label>Category</label>
+          <select className="form-select" value={category} onChange={(e) => setCategory(e.target.value)} required>
+            <option value="">Select category</option>
+            {CATEGORIES.map((c) => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Description (Markdown supported)</label>
+          <MarkdownEditor value={description} onChange={setDescription} placeholder="Provide as much detail as possible..." />
+        </div>
+
+        <div className="form-group">
+          <label>Supporting Evidence (Optional)</label>
+          <FileUpload files={files} onChange={setFiles} />
+        </div>
+
+        <div className="form-group">
+          <label className="form-checkbox">
+            <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
+            Submit anonymously — no identifying information will be stored
+          </label>
+        </div>
+
+        <button type="submit" className="btn btn-primary" disabled={submitting}>
+          {submitting ? 'Submitting...' : 'Submit Report'}
+        </button>
+      </form>
+    </div>
+  );
+}

@@ -1,0 +1,95 @@
+import { Router } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { authenticate } from '../middleware/auth.js';
+
+const router = Router();
+const prisma = new PrismaClient();
+
+// GET /api/opinions — list opinion posts
+router.get('/', async (req, res) => {
+  try {
+    const posts = await prisma.opinionPost.findMany({
+      include: {
+        author: { select: { id: true, displayName: true } },
+        _count: { select: { comments: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(posts);
+  } catch (err) {
+    console.error('List opinions error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET /api/opinions/:id — opinion detail with comments
+router.get('/:id', async (req, res) => {
+  try {
+    const post = await prisma.opinionPost.findUnique({
+      where: { id: req.params.id },
+      include: {
+        author: { select: { id: true, displayName: true } },
+        comments: {
+          include: {
+            author: { select: { id: true, displayName: true } },
+          },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+    if (!post) return res.status(404).json({ error: 'Opinion post not found' });
+    res.json(post);
+  } catch (err) {
+    console.error('Get opinion error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/opinions — create opinion post
+router.post('/', authenticate, async (req, res) => {
+  try {
+    const { title, body } = req.body;
+    if (!title || !body) {
+      return res.status(400).json({ error: 'Title and body are required' });
+    }
+
+    const post = await prisma.opinionPost.create({
+      data: { title, body, authorId: req.user.id },
+      include: {
+        author: { select: { id: true, displayName: true } },
+        _count: { select: { comments: true } },
+      },
+    });
+
+    res.status(201).json(post);
+  } catch (err) {
+    console.error('Create opinion error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/opinions/:id/comments — add comment
+router.post('/:id/comments', authenticate, async (req, res) => {
+  try {
+    const { body } = req.body;
+    if (!body) return res.status(400).json({ error: 'Comment body is required' });
+
+    const comment = await prisma.opinionComment.create({
+      data: {
+        opinionId: req.params.id,
+        authorId: req.user.id,
+        body,
+      },
+      include: {
+        author: { select: { id: true, displayName: true } },
+      },
+    });
+
+    res.status(201).json(comment);
+  } catch (err) {
+    console.error('Create opinion comment error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+export default router;
