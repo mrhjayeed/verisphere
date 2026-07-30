@@ -18,12 +18,14 @@ export async function uploadToStorage(buffer, originalName) {
   const ext = path.extname(originalName);
   const randomName = `${crypto.randomUUID()}${ext}`;
 
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY;
+
   // If Supabase is configured, use it
-  if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (process.env.SUPABASE_URL && supabaseKey) {
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(
       process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      supabaseKey
     );
 
     const { data, error } = await supabase.storage

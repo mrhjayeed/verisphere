@@ -32,6 +32,15 @@ export default function EvidenceDetail() {
   if (loading) return <div className="loading">Loading evidence...</div>;
   if (!item) return <div className="empty-state"><h3>Evidence item not found</h3></div>;
 
+  const getFileUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    return `${baseUrl}${path}`;
+  };
+
+  const fileUrl = getFileUrl(item?.filePath);
+
   return (
     <div className="detail-page" style={{ maxWidth: '820px' }}>
       <Link to="/evidence" style={{ fontSize: '0.875rem', color: 'var(--fg-secondary)' }}>
@@ -52,7 +61,7 @@ export default function EvidenceDetail() {
           <button className="btn btn-sm btn-outline" onClick={handleCopyLink}>
             {copied ? '✓ Link Copied' : '🔗 Share Link'}
           </button>
-          <a href={item.filePath} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-primary">
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-primary">
             Open File ↗
           </a>
         </div>
@@ -68,14 +77,14 @@ export default function EvidenceDetail() {
       <div className="card" style={{ marginBottom: 'var(--space-xl)', padding: 'var(--space-md)', textAlign: 'center', background: 'var(--bg-alt)' }}>
         {isImage(item.fileType) ? (
           <img
-            src={item.filePath}
+            src={fileUrl}
             alt={item.title}
             style={{ maxWidth: '100%', maxHeight: '600px', objectFit: 'contain', borderRadius: '4px' }}
           />
         ) : isPdf(item.fileType) ? (
           <div style={{ height: '500px', width: '100%' }}>
             <iframe
-              src={item.filePath}
+              src={fileUrl}
               title={item.title}
               width="100%"
               height="100%"
@@ -85,7 +94,7 @@ export default function EvidenceDetail() {
         ) : (
           <div style={{ padding: 'var(--space-2xl) var(--space-md)' }}>
             <p className="text-secondary" style={{ marginBottom: 'var(--space-md)' }}>Document file ({item.originalName})</p>
-            <a href={item.filePath} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               Download File ({item.originalName})
             </a>
           </div>
