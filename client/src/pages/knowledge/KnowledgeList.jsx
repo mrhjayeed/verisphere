@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../api/client';
 
 const CATEGORIES = ['all', 'legal_rights', 'governance', 'civic_engagement', 'environment', 'education'];
 
 export default function KnowledgeList() {
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get('category') || 'all';
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(initialCategory);
 
   useEffect(() => {
     const params = filter !== 'all' ? { category: filter } : {};

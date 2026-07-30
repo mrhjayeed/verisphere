@@ -49,7 +49,7 @@ export default function Footer() {
                   GitHub Repository ↗
                 </a>
               </li>
-              <li><Link to="/knowledge/1">Right to Information (RTI)</Link></li>
+              <li><Link to="/knowledge?category=legal_rights">Right to Information (RTI)</Link></li>
               <li><Link to="/whistleblow">Anonymity Safeguards</Link></li>
               <li><Link to="/login">Admin Access</Link></li>
             </ul>
