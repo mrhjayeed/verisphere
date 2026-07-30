@@ -2,31 +2,34 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const PRIMARY_NAV = [
+const CORE_NAV = [
   { path: '/reports', label: 'Reports' },
   { path: '/officials', label: 'Officials' },
   { path: '/dashboard', label: 'Dashboard' },
-  { path: '/forum', label: 'Forum' },
 ];
 
-const SECONDARY_NAV = [
-  { path: '/evidence', label: 'Evidence Archive' },
-  { path: '/knowledge', label: 'Knowledge Hub' },
+const COMMUNITY_NAV = [
+  { path: '/forum', label: 'Public Forum' },
   { path: '/opinions', label: 'Public Opinions' },
-  { path: '/whistleblow', label: 'Whistleblower Portal' },
+  { path: '/knowledge', label: 'Knowledge Hub' },
+  { path: '/evidence', label: 'Evidence Archive' },
 ];
 
-const ALL_NAV = [...PRIMARY_NAV, ...SECONDARY_NAV];
+const ALL_NAV = [
+  ...CORE_NAV,
+  ...COMMUNITY_NAV,
+  { path: '/whistleblow', label: 'Anonymous Whistleblow' },
+];
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
+  const [communityDropdownOpen, setCommunityDropdownOpen] = useState(false);
 
   const userDropdownRef = useRef(null);
-  const moreDropdownRef = useRef(null);
+  const communityDropdownRef = useRef(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -34,15 +37,15 @@ export default function Navbar() {
       if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
         setUserDropdownOpen(false);
       }
-      if (moreDropdownRef.current && !moreDropdownRef.current.contains(event.target)) {
-        setMoreDropdownOpen(false);
+      if (communityDropdownRef.current && !communityDropdownRef.current.contains(event.target)) {
+        setCommunityDropdownOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isSecondaryActive = SECONDARY_NAV.some((item) => location.pathname.startsWith(item.path));
+  const isCommunityActive = COMMUNITY_NAV.some((item) => location.pathname.startsWith(item.path));
 
   return (
     <>
@@ -52,7 +55,7 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <ul className="nav-links">
-            {PRIMARY_NAV.map(({ path, label }) => (
+            {CORE_NAV.map(({ path, label }) => (
               <li key={path}>
                 <Link
                   to={path}
@@ -63,38 +66,27 @@ export default function Navbar() {
               </li>
             ))}
 
-            {SECONDARY_NAV.map(({ path, label }) => (
-              <li key={path} className="nav-item-secondary">
-                <Link
-                  to={path}
-                  className={location.pathname.startsWith(path) ? 'active' : ''}
-                >
-                  {label.replace(' Archive', '').replace(' Hub', '').replace(' Portal', '')}
-                </Link>
-              </li>
-            ))}
-
-            {/* More Dropdown (Visible on medium screens) */}
-            <li className="more-dropdown-container" ref={moreDropdownRef}>
+            {/* Community & Knowledge Dropdown */}
+            <li className="more-dropdown-container" ref={communityDropdownRef} style={{ display: 'list-item' }}>
               <button
                 type="button"
-                className={`more-dropdown-btn ${isSecondaryActive ? 'active' : ''}`}
-                onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
+                className={`more-dropdown-btn ${isCommunityActive ? 'active' : ''}`}
+                onClick={() => setCommunityDropdownOpen(!communityDropdownOpen)}
               >
-                <span>More</span>
-                <svg className={`chevron-icon ${moreDropdownOpen ? 'open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <span>Community</span>
+                <svg className={`chevron-icon ${communityDropdownOpen ? 'open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
-              {moreDropdownOpen && (
-                <div className="more-dropdown-menu">
-                  {SECONDARY_NAV.map(({ path, label }) => (
+              {communityDropdownOpen && (
+                <div className="more-dropdown-menu" style={{ width: '190px' }}>
+                  {COMMUNITY_NAV.map(({ path, label }) => (
                     <Link
                       key={path}
                       to={path}
                       className={location.pathname.startsWith(path) ? 'active' : ''}
-                      onClick={() => setMoreDropdownOpen(false)}
+                      onClick={() => setCommunityDropdownOpen(false)}
                     >
                       {label}
                     </Link>
@@ -104,8 +96,12 @@ export default function Navbar() {
             </li>
           </ul>
 
-          {/* User Section */}
+          {/* Right Action CTA & User Section */}
           <div className="nav-auth">
+            <Link to="/whistleblow" className="btn btn-sm btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              🔒 Whistleblow
+            </Link>
+
             {user ? (
               <div className="user-dropdown-container" ref={userDropdownRef}>
                 <button

@@ -264,24 +264,10 @@ small, .text-sm {
   color: var(--fg);
 }
 
-/* Responsive Navbar Link Collapse */
-.nav-item-secondary {
-  display: list-item;
-}
-
+/* Navbar Dropdowns */
 .more-dropdown-container {
-  display: none;
+  display: list-item;
   position: relative;
-}
-
-@media (max-width: 1200px) {
-  .nav-item-secondary {
-    display: none;
-  }
-
-  .more-dropdown-container {
-    display: list-item;
-  }
 }
 
 .more-dropdown-btn {
