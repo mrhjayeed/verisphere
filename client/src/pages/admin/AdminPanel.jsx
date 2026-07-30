@@ -281,6 +281,7 @@ function ArticlesTab() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ title: '', category: '', content: '' });
   const [submitting, setSubmitting] = useState(false);
 
@@ -291,16 +292,32 @@ function ArticlesTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCreate = async (e) => {
+  const handleStartEdit = (article) => {
+    setEditingId(article.id);
+    setForm({ title: article.title, category: article.category, content: article.content });
+    setShowForm(true);
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm({ title: '', category: '', content: '' });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await api.post('/knowledge', form);
-      setArticles((prev) => [res.data, ...prev]);
-      setForm({ title: '', category: '', content: '' });
-      setShowForm(false);
+      if (editingId) {
+        const res = await api.put(`/knowledge/${editingId}`, form);
+        setArticles((prev) => prev.map((a) => a.id === editingId ? res.data : a));
+      } else {
+        const res = await api.post('/knowledge', form);
+        setArticles((prev) => [res.data, ...prev]);
+      }
+      handleCancelForm();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to create article');
+      alert(err.response?.data?.error || 'Failed to save article');
     } finally {
       setSubmitting(false);
     }
@@ -321,14 +338,15 @@ function ArticlesTab() {
   return (
     <div>
       <div style={{ marginBottom: 'var(--space-lg)' }}>
-        <button className="btn btn-outline" onClick={() => setShowForm(!showForm)}>
+        <button className="btn btn-outline" onClick={() => showForm ? handleCancelForm() : setShowForm(true)}>
           {showForm ? 'Cancel' : '+ Add Article'}
         </button>
       </div>
 
       {showForm && (
         <div className="card" style={{ marginBottom: 'var(--space-lg)' }}>
-          <form onSubmit={handleCreate}>
+          <h3>{editingId ? 'Edit Article' : 'New Article'}</h3>
+          <form onSubmit={handleSubmit}>
             <div className="grid-2">
               <div className="form-group">
                 <label>Title</label>
@@ -351,7 +369,7 @@ function ArticlesTab() {
               <MarkdownEditor value={form.content} onChange={(v) => setForm({ ...form, content: v })} />
             </div>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Creating...' : 'Publish Article'}
+              {submitting ? 'Saving...' : editingId ? 'Update Article' : 'Publish Article'}
             </button>
           </form>
         </div>
@@ -371,11 +389,16 @@ function ArticlesTab() {
           <tbody>
             {articles.map((a) => (
               <tr key={a.id}>
-                <td>{a.title}</td>
-                <td>{a.category.replace(/_/g, ' ')}</td>
-                <td>{a.author.displayName}</td>
-                <td className="text-sm">{new Date(a.createdAt).toLocaleDateString()}</td>
                 <td>
+                  <Link to={`/knowledge/${a.id}`} style={{ fontWeight: 600 }}>
+                    {a.title}
+                  </Link>
+                </td>
+                <td>{a.category.replace(/_/g, ' ')}</td>
+                <td>{a.author?.displayName || 'Admin'}</td>
+                <td className="text-sm">{new Date(a.createdAt).toLocaleDateString()}</td>
+                <td style={{ display: 'flex', gap: '0.4rem' }}>
+                  <button className="btn btn-sm btn-outline" onClick={() => handleStartEdit(a)}>Edit</button>
                   <button className="btn btn-sm btn-danger" onClick={() => handleDelete(a.id)}>Delete</button>
                 </td>
               </tr>
