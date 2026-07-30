@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
+
 
 import authRoutes from './routes/auth.js';
 import reportsRoutes from './routes/reports.js';
@@ -17,7 +17,7 @@ import submissionsRoutes from './routes/submissions.js';
 
 const app = express();
 const httpServer = createServer(app);
-const prisma = new PrismaClient();
+import prisma from './prisma.js';
 
 // CORS
 const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';

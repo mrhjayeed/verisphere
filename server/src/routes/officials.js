@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../prisma.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { upload, uploadToStorage } from '../middleware/upload.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // GET /api/officials — list all officials
 router.get('/', async (req, res) => {
