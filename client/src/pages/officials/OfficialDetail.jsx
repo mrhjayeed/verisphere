@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
+import MarkdownEditor from '../../components/MarkdownEditor';
 import StatusBadge from '../../components/StatusBadge';
 import { useAuth } from '../../context/AuthContext';
 
@@ -11,6 +12,35 @@ export default function OfficialDetail() {
   const isAdmin = user?.role === 'admin';
   const [official, setOfficial] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Profile Edit Form State
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: '', position: '', institution: '', bio: '' });
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+
+  const startEditProfile = () => {
+    setProfileForm({
+      name: official.name,
+      position: official.position,
+      institution: official.institution,
+      bio: official.bio || '',
+    });
+    setEditingProfile(true);
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setUpdatingProfile(true);
+    try {
+      const res = await api.put(`/officials/${id}`, profileForm);
+      setOfficial((prev) => ({ ...prev, ...res.data }));
+      setEditingProfile(false);
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to update official profile');
+    } finally {
+      setUpdatingProfile(false);
+    }
+  };
 
   // Forms
   const [showPromiseForm, setShowPromiseForm] = useState(false);
@@ -101,28 +131,81 @@ export default function OfficialDetail() {
 
   return (
     <div className="detail-page">
-      <Link to="/officials" style={{ fontSize: '0.875rem', color: 'var(--fg-secondary)' }}>← Back to officials</Link>
-
-      <div className="official-header" style={{ marginTop: 'var(--space-md)' }}>
-        {official.photoPath ? (
-          <img src={official.photoPath} alt={official.name} className="official-photo" />
-        ) : (
-          <div className="official-photo-placeholder">
-            {official.name.charAt(0)}
-          </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Link to="/officials" style={{ fontSize: '0.875rem', color: 'var(--fg-secondary)' }}>← Back to officials</Link>
+        {isAdmin && (
+          <button className="btn btn-sm btn-outline" onClick={() => editingProfile ? setEditingProfile(false) : startEditProfile()}>
+            {editingProfile ? 'Cancel Editing' : '✏️ Edit Profile'}
+          </button>
         )}
-        <div>
-          <h1 style={{ marginBottom: '0.25rem' }}>{official.name}</h1>
-          <p className="text-secondary" style={{ marginBottom: '0.25rem' }}>{official.position}</p>
-          <p className="text-secondary text-sm">{official.institution}</p>
-        </div>
       </div>
 
-      {official.bio && (
-        <div className="detail-section">
-          <h2>Biography</h2>
-          <MarkdownRenderer content={official.bio} />
+      {editingProfile ? (
+        <div className="card" style={{ marginTop: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
+          <h2>Edit Official Profile</h2>
+          <form onSubmit={handleUpdateProfile}>
+            <div className="grid-2">
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  className="form-input"
+                  value={profileForm.name}
+                  onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Position</label>
+                <input
+                  className="form-input"
+                  value={profileForm.position}
+                  onChange={(e) => setProfileForm({ ...profileForm, position: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+            <div className="form-group">
+              <label>Institution</label>
+              <input
+                className="form-input"
+                value={profileForm.institution}
+                onChange={(e) => setProfileForm({ ...profileForm, institution: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Biography (Markdown supported)</label>
+              <MarkdownEditor value={profileForm.bio} onChange={(v) => setProfileForm({ ...profileForm, bio: v })} />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={updatingProfile}>
+              {updatingProfile ? 'Saving Profile...' : 'Save Profile Changes'}
+            </button>
+          </form>
         </div>
+      ) : (
+        <>
+          <div className="official-header" style={{ marginTop: 'var(--space-md)' }}>
+            {official.photoPath ? (
+              <img src={official.photoPath} alt={official.name} className="official-photo" />
+            ) : (
+              <div className="official-photo-placeholder">
+                {official.name.charAt(0)}
+              </div>
+            )}
+            <div>
+              <h1 style={{ marginBottom: '0.25rem' }}>{official.name}</h1>
+              <p className="text-secondary" style={{ marginBottom: '0.25rem' }}>{official.position}</p>
+              <p className="text-secondary text-sm">{official.institution}</p>
+            </div>
+          </div>
+
+          {official.bio && (
+            <div className="detail-section">
+              <h2>Biography</h2>
+              <MarkdownRenderer content={official.bio} />
+            </div>
+          )}
+        </>
       )}
 
       {/* PROMISES TRACKER */}

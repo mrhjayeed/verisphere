@@ -178,6 +178,7 @@ function OfficialsTab() {
   const [officials, setOfficials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ name: '', position: '', institution: '', bio: '' });
   const [submitting, setSubmitting] = useState(false);
 
@@ -188,16 +189,32 @@ function OfficialsTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCreate = async (e) => {
+  const handleStartEdit = (o) => {
+    setEditingId(o.id);
+    setForm({ name: o.name, position: o.position, institution: o.institution, bio: o.bio || '' });
+    setShowForm(true);
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm({ name: '', position: '', institution: '', bio: '' });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await api.post('/officials', form);
-      setOfficials((prev) => [...prev, res.data]);
-      setForm({ name: '', position: '', institution: '', bio: '' });
-      setShowForm(false);
+      if (editingId) {
+        const res = await api.put(`/officials/${editingId}`, form);
+        setOfficials((prev) => prev.map((o) => o.id === editingId ? { ...o, ...res.data } : o));
+      } else {
+        const res = await api.post('/officials', form);
+        setOfficials((prev) => [...prev, res.data]);
+      }
+      handleCancelForm();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to create official');
+      alert(err.response?.data?.error || 'Failed to save official profile');
     } finally {
       setSubmitting(false);
     }
@@ -208,14 +225,15 @@ function OfficialsTab() {
   return (
     <div>
       <div style={{ marginBottom: 'var(--space-lg)' }}>
-        <button className="btn btn-outline" onClick={() => setShowForm(!showForm)}>
+        <button className="btn btn-outline" onClick={() => showForm ? handleCancelForm() : setShowForm(true)}>
           {showForm ? 'Cancel' : '+ Add Official'}
         </button>
       </div>
 
       {showForm && (
         <div className="card" style={{ marginBottom: 'var(--space-lg)' }}>
-          <form onSubmit={handleCreate}>
+          <h3>{editingId ? 'Edit Official Profile' : 'New Official Profile'}</h3>
+          <form onSubmit={handleSubmit}>
             <div className="grid-2">
               <div className="form-group">
                 <label>Name</label>
@@ -235,7 +253,7 @@ function OfficialsTab() {
               <MarkdownEditor value={form.bio} onChange={(v) => setForm({ ...form, bio: v })} />
             </div>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Creating...' : 'Create Official'}
+              {submitting ? 'Saving...' : editingId ? 'Update Official' : 'Create Official'}
             </button>
           </form>
         </div>
@@ -263,7 +281,10 @@ function OfficialsTab() {
                 <td>{o.position}</td>
                 <td>{o.institution}</td>
                 <td>{o._count?.complaints || 0}</td>
-                <td>
+                <td style={{ display: 'flex', gap: '0.4rem' }}>
+                  <button className="btn btn-sm btn-outline" onClick={() => handleStartEdit(o)}>
+                    Edit
+                  </button>
                   <Link to={`/officials/${o.id}`} className="btn btn-sm btn-outline">
                     Manage Profile & Promises →
                   </Link>
