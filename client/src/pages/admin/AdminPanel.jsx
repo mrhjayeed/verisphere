@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/client';
 import StatusBadge from '../../components/StatusBadge';
 import MarkdownEditor from '../../components/MarkdownEditor';
@@ -248,15 +249,25 @@ function OfficialsTab() {
               <th>Position</th>
               <th>Institution</th>
               <th>Complaints</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {officials.map((o) => (
               <tr key={o.id}>
-                <td>{o.name}</td>
+                <td>
+                  <Link to={`/officials/${o.id}`} style={{ fontWeight: 600 }}>
+                    {o.name}
+                  </Link>
+                </td>
                 <td>{o.position}</td>
                 <td>{o.institution}</td>
                 <td>{o._count?.complaints || 0}</td>
+                <td>
+                  <Link to={`/officials/${o.id}`} className="btn btn-sm btn-outline">
+                    Manage Profile & Promises →
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>
