@@ -5,6 +5,15 @@ import StatusBadge from '../../components/StatusBadge';
 import MarkdownEditor from '../../components/MarkdownEditor';
 import { useSocket } from '../../hooks/useSocket';
 
+import MarkdownRenderer from '../../components/MarkdownRenderer';
+
+const getFileUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const baseUrl = import.meta.env.VITE_API_URL || '';
+  return `${baseUrl}${path}`;
+};
+
 export default function AdminPanel() {
   const [tab, setTab] = useState('submissions');
 
@@ -33,6 +42,7 @@ export default function AdminPanel() {
 function SubmissionsTab() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSub, setSelectedSub] = useState(null);
 
   useEffect(() => {
     api.get('/submissions')
@@ -58,53 +68,143 @@ function SubmissionsTab() {
     }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return <div className="loading">Loading submissions...</div>;
 
   return (
-    <div className="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Submitter</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {submissions.map((s) => (
-            <tr key={s.id}>
-              <td>{s.title}</td>
-              <td>{s.category.replace(/_/g, ' ')}</td>
-              <td>{s.submitter?.displayName || <em>Anonymous</em>}</td>
-              <td><StatusBadge status={s.status} /></td>
-              <td className="text-sm">{new Date(s.createdAt).toLocaleDateString()}</td>
-              <td>
+    <>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Submitter</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {submissions.map((s) => (
+              <tr key={s.id}>
+                <td><strong>{s.title}</strong></td>
+                <td><span className="badge badge-category">{s.category.replace(/_/g, ' ')}</span></td>
+                <td>{s.submitter?.displayName || <em>Anonymous</em>}</td>
+                <td><StatusBadge status={s.status} /></td>
+                <td className="text-sm">{new Date(s.createdAt).toLocaleDateString()}</td>
+                <td style={{ whiteSpace: 'nowrap' }}>
+                  <button
+                    className="btn btn-sm btn-outline"
+                    onClick={() => setSelectedSub(s)}
+                    style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem', marginRight: '0.4rem' }}
+                  >
+                    👁 View
+                  </button>
+                  <select
+                    className="form-select"
+                    style={{ width: 'auto', display: 'inline-block', padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}
+                    value={s.status}
+                    onChange={(e) => updateStatus(s.id, e.target.value)}
+                  >
+                    <option value="received">Received</option>
+                    <option value="under_review">Under Review</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="dismissed">Dismissed</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Submission Detail Modal */}
+      {selectedSub && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(30, 58, 95, 0.25)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem'
+        }} onClick={() => setSelectedSub(null)}>
+          <div style={{
+            maxWidth: '680px', width: '100%', maxHeight: '85vh', overflowY: 'auto',
+            background: '#FFFFFF',
+            border: '1px solid var(--border-dark)', borderRadius: '8px', padding: 'var(--space-lg)',
+            boxShadow: '0 20px 40px -10px rgba(30, 58, 95, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08)'
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-md)' }}>
+              <div>
+                <span className="badge badge-category">{selectedSub.category.replace(/_/g, ' ')}</span>
+                <h2 style={{ fontSize: '1.3rem', marginTop: '0.4rem', marginBottom: '0.25rem' }}>{selectedSub.title}</h2>
+                {selectedSub.trackingCode && (
+                  <div className="text-xs text-tertiary" style={{ fontFamily: 'monospace' }}>
+                    Tracking Code: <strong>{selectedSub.trackingCode}</strong>
+                  </div>
+                )}
+              </div>
+              <button className="btn btn-sm btn-outline" onClick={() => setSelectedSub(null)}>✕ Close</button>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: 'var(--space-md)', flexWrap: 'wrap', fontSize: '0.875rem' }}>
+              <div><strong>Status:</strong> <StatusBadge status={selectedSub.status} /></div>
+              <div><strong>Submitter:</strong> {selectedSub.submitter?.displayName || <em>Anonymous</em>}</div>
+              <div><strong>Submitted:</strong> {new Date(selectedSub.createdAt).toLocaleString()}</div>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+              <h3 style={{ fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--fg-secondary)' }}>Full Description & Details</h3>
+              <div style={{ background: 'var(--bg-alt)', padding: 'var(--space-md)', borderRadius: '4px', border: '1px solid var(--border)' }}>
+                <MarkdownRenderer content={selectedSub.description} />
+              </div>
+            </div>
+
+            {selectedSub.files?.length > 0 && (
+              <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+                <h3 style={{ fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--fg-secondary)' }}>Attached Evidence Files ({selectedSub.files.length})</h3>
+                <div className="list-stack">
+                  {selectedSub.files.map((file) => (
+                    <div key={file.id} className="file-item">
+                      <a href={getFileUrl(file.filePath)} target="_blank" rel="noopener noreferrer">
+                        📄 {file.originalName} ↗
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="text-sm">Update Status:</span>
                 <select
                   className="form-select"
-                  style={{ width: 'auto', padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}
-                  value={s.status}
-                  onChange={(e) => updateStatus(s.id, e.target.value)}
+                  style={{ width: 'auto' }}
+                  value={selectedSub.status}
+                  onChange={(e) => {
+                    updateStatus(selectedSub.id, e.target.value);
+                    setSelectedSub((prev) => prev ? { ...prev, status: e.target.value } : null);
+                  }}
                 >
                   <option value="received">Received</option>
                   <option value="under_review">Under Review</option>
                   <option value="resolved">Resolved</option>
                   <option value="dismissed">Dismissed</option>
                 </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+              </div>
+              <button className="btn btn-primary" onClick={() => setSelectedSub(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
 function ReportsTab() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedReport, setSelectedReport] = useState(null);
 
   useEffect(() => {
     api.get('/reports')
@@ -130,47 +230,105 @@ function ReportsTab() {
     }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return <div className="loading">Loading reports...</div>;
 
   return (
-    <div className="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Author</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reports.map((r) => (
-            <tr key={r.id}>
-              <td>{r.title}</td>
-              <td>{r.category.replace(/_/g, ' ')}</td>
-              <td>{r.author?.displayName || <em>Anonymous</em>}</td>
-              <td><StatusBadge status={r.status} /></td>
-              <td className="text-sm">{new Date(r.createdAt).toLocaleDateString()}</td>
-              <td>
-                <select
-                  className="form-select"
-                  style={{ width: 'auto', padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}
-                  value={r.status}
-                  onChange={(e) => updateStatus(r.id, e.target.value)}
-                >
-                  <option value="received">Received</option>
-                  <option value="under_review">Under Review</option>
-                  <option value="resolved">Resolved</option>
-                  <option value="dismissed">Dismissed</option>
-                </select>
-              </td>
+    <>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Author</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {reports.map((r) => (
+              <tr key={r.id}>
+                <td><strong>{r.title}</strong></td>
+                <td><span className="badge badge-category">{r.category.replace(/_/g, ' ')}</span></td>
+                <td>{r.author?.displayName || <em>Anonymous</em>}</td>
+                <td><StatusBadge status={r.status} /></td>
+                <td className="text-sm">{new Date(r.createdAt).toLocaleDateString()}</td>
+                <td style={{ whiteSpace: 'nowrap' }}>
+                  <button
+                    className="btn btn-sm btn-outline"
+                    onClick={() => setSelectedReport(r)}
+                    style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem', marginRight: '0.4rem' }}
+                  >
+                    👁 View
+                  </button>
+                  <select
+                    className="form-select"
+                    style={{ width: 'auto', display: 'inline-block', padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}
+                    value={r.status}
+                    onChange={(e) => updateStatus(r.id, e.target.value)}
+                  >
+                    <option value="received">Received</option>
+                    <option value="under_review">Under Review</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="dismissed">Dismissed</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Report Detail Modal */}
+      {selectedReport && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(30, 58, 95, 0.25)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem'
+        }} onClick={() => setSelectedReport(null)}>
+          <div style={{
+            maxWidth: '680px', width: '100%', maxHeight: '85vh', overflowY: 'auto',
+            background: '#FFFFFF',
+            border: '1px solid var(--border-dark)', borderRadius: '8px', padding: 'var(--space-lg)',
+            boxShadow: '0 20px 40px -10px rgba(30, 58, 95, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08)'
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-md)' }}>
+              <div>
+                <span className="badge badge-category">{selectedReport.category.replace(/_/g, ' ')}</span>
+                <h2 style={{ fontSize: '1.3rem', marginTop: '0.4rem', marginBottom: '0.25rem' }}>{selectedReport.title}</h2>
+                <div className="text-xs text-tertiary">
+                  Location: {selectedReport.location || 'Not specified'}
+                </div>
+              </div>
+              <button className="btn btn-sm btn-outline" onClick={() => setSelectedReport(null)}>✕ Close</button>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: 'var(--space-md)', flexWrap: 'wrap', fontSize: '0.875rem' }}>
+              <div><strong>Status:</strong> <StatusBadge status={selectedReport.status} /></div>
+              <div><strong>Author:</strong> {selectedReport.author?.displayName || <em>Anonymous</em>}</div>
+              <div><strong>Date:</strong> {new Date(selectedReport.createdAt).toLocaleString()}</div>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+              <h3 style={{ fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--fg-secondary)' }}>Report Description</h3>
+              <div style={{ background: 'var(--bg-alt)', padding: 'var(--space-md)', borderRadius: '4px', border: '1px solid var(--border)' }}>
+                <MarkdownRenderer content={selectedReport.description} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)' }}>
+              <Link to={`/reports/${selectedReport.id}`} target="_blank" className="btn btn-sm btn-primary">
+                Open Full Report Page ↗
+              </Link>
+              <button className="btn btn-outline" onClick={() => setSelectedReport(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
