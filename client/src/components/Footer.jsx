@@ -9,15 +9,15 @@ export default function Footer() {
           <div className="footer-col-brand">
             <h3>Verisphere</h3>
             <p className="footer-tagline">
-              An open-source civic accountability & transparency platform empowering citizens to report injustice, track public officials, archive evidence, and protect democratic rights.
+              An open-source civic accountability and transparency platform empowering citizens to report injustice, audit public official commitments, archive evidence, and safeguard democratic rights.
             </p>
             <div className="footer-badge-list">
-              <span className="badge badge-category">MIT Open Source</span>
-              <span className="badge badge-category">Public Interest Data</span>
+              <span className="badge badge-category">MIT License</span>
+              <span className="badge badge-category">Digital Public Infrastructure</span>
             </div>
           </div>
 
-          {/* Platform Features */}
+          {/* Core Modules */}
           <div className="footer-col">
             <h4>Platform</h4>
             <ul className="footer-links">
@@ -29,7 +29,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Citizen Resources */}
+          {/* Community & Knowledge */}
           <div className="footer-col">
             <h4>Resources</h4>
             <ul className="footer-links">
@@ -40,28 +40,28 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Governance & Open Data */}
+          {/* Open Source & Governance */}
           <div className="footer-col">
-            <h4>Governance</h4>
+            <h4>Open Source</h4>
             <ul className="footer-links">
               <li>
                 <a href="https://github.com/mrhjayeed/verisphere" target="_blank" rel="noopener noreferrer">
                   GitHub Repository ↗
                 </a>
               </li>
-              <li><Link to="/knowledge?category=legal_rights">Right to Information (RTI)</Link></li>
-              <li><Link to="/whistleblow">Anonymity Safeguards</Link></li>
-              <li><Link to="/login">Admin Access</Link></li>
+              <li><Link to="/knowledge">Legal & Rights Guides</Link></li>
+              <li><Link to="/whistleblow">Privacy Safeguards</Link></li>
+              <li><Link to="/login">System Sign In</Link></li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Verisphere. Built for Civic Transparency & Accountability.</span>
+          <span>© {new Date().getFullYear()} Verisphere. Released under the open-source MIT License.</span>
           <div className="footer-status">
             <span className="status-dot"></span>
-            <span>System Operational · Realtime Active</span>
+            <span>All Systems Operational</span>
           </div>
         </div>
       </div>
