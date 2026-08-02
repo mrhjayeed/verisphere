@@ -1,149 +1,198 @@
-# 🌐 Verisphere — Open-Source Civic Accountability Platform
+# Verisphere
 
-[![July Hackathon 2026](https://img.shields.io/badge/July%20Hackathon%202026-Track%20B%3A%20Spirit%20of%20July-1E3A5F?style=for-the-badge)](https://hackathon2026.jrabd.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
-[![Live App](https://img.shields.io/badge/Live%20App-verispherebd.vercel.app-2D6A4F?style=for-the-badge)](https://verispherebd.vercel.app)
-
-**Verisphere** is an open-source, community-driven civic platform where citizens report injustice, track public official performance, archive verified evidence, learn their legal rights, discuss issues with live Markdown preview, and whistleblow with 100% cryptographic anonymity.
-
-Built for **July Hackathon 2026** under **Track B. Spirit of July** *(Transparency, Accountability, & Access to Justice)*.
+Verisphere is an open-source, privacy-first civic accountability platform designed to protect whistleblowers, audit public institutions, archive evidence, and enable transparent public participation.
 
 ---
 
-## 🔗 Live Links & Demo Access
+## Motivation
 
-* 🌐 **Live Web Application**: [https://verispherebd.vercel.app](https://verispherebd.vercel.app)
-* ⚙️ **Production API Endpoint**: `https://verisphere-backend-0z2y.onrender.com`
-* 💻 **GitHub Repository**: [https://github.com/mrhjayeed/verisphere](https://github.com/mrhjayeed/verisphere)
+In many societies, civic participation and public accountability face significant structural barriers:
 
-### 🗝️ Hackathon Demo Credentials
+- **Whistleblower Risks:** Individuals disclosing public-interest information face surveillance, identity tracking, and severe personal retaliation.
+- **Ephemerality of Social Media:** Evidence of corruption, service failures, or human rights violations shared on mainstream social networks is frequently removed, algorithmically suppressed, or lost across fragmented feeds.
+- **The Accountability Gap:** Public officials and institutions make commitments during crises, but citizens lack structured, persistent systems to audit whether those promises are kept or broken over time.
+- **Information Asymmetry:** Citizens lack accessible knowledge regarding their constitutional rights, legal procedures, and mechanisms for public grievance redressal.
 
-| Role | Username | Password | Privileges |
-| :--- | :--- | :--- | :--- |
-| 🛡️ **Admin** | `admin` | `admin123` | Full Admin Panel, Official Profile Editing, Promise Status Management |
-| 👤 **Citizen 1** | `citizen` | `citizen123` | File Reports, Submit Opinions, Post Forum Threads, Upload Evidence |
-| 👤 **Citizen 2** | `farida_k` | `citizen123` | Community Member |
-
-### 🔒 Sample Secret Whistleblower Tracking Codes
-Test case tracking without login at **[`/whistleblow/track`](https://verispherebd.vercel.app/whistleblow/track)**:
-* `VS-789012` *(Status: Under Review)*
-* `VS-345678` *(Status: Resolved)*
+Verisphere was created to bridge this gap. By building open-source digital public infrastructure, Verisphere enables evidence-based civic reporting, cryptographically safer whistleblowing, and transparent public official tracking.
 
 ---
 
-## 🎯 Problem Statement & Track Alignment
+## Core Guiding Principles
 
-In the wake of civic movements and structural reforms, citizens lack centralized, censorship-resistant platforms to monitor public governance. Critical evidence of corruption, human rights abuses, and municipal neglect is frequently deleted or algorithmically suppressed on mainstream social networks. Potential whistleblowers face grave risks of retaliation due to intrusive IP logging and data retention.
-
-**Verisphere** directly addresses **Track B: Spirit of July** by providing:
-1. **Zero-PII Encrypted Whistleblowing**: Submit disclosures without storing IP addresses, user IDs, or browser fingerprints, accompanied by deterministic Secret Tracking Codes.
-2. **Public Official Performance Scorecards**: Transparent tracking of official pledges (*Kept*, *Broken*, *Pending*), complaints, and controversies.
-3. **Interactive Evidence Vault**: Permanent cloud preservation of civic evidence with embedded PDF document readers and image inspection tools.
-4. **Access to Justice**: Simple, accessible guides on constitutional rights, RTI (Right to Information) filings, and Public Interest Litigation (PIL).
+- **Privacy by Design:** Zero-PII metadata stripping for anonymous disclosures.
+- **Evidence-Based Accountability:** Every report and official pledge is backed by verifiable documentation.
+- **Open Knowledge:** Educational legal guides and open data principles to empower public literacy.
+- **Censorship Resistance:** Permanent, cloud-preserved archives for civic records and documents.
+- **Community Governance:** Open-source development built for public oversight and independent auditing.
 
 ---
 
-## ✨ Key Platform Features
+## Platform Features
 
-| Capability | Technical Highlights |
-| :--- | :--- |
-| **🔒 Anonymous Whistleblowing** | Zero-metadata submission mode with Secret Tracking Code generation (`VS-XXXXXX`) |
-| **🏛️ Official Profiles & Scorecards** | Public pledge tracking (*Kept vs. Broken*), controversies, and direct complaint linking |
-| **📋 Civic Reporting** | Filtered reports by category (*Corruption, Environment, Public Service, Infrastructure*) |
-| **📁 Interactive Evidence Archive** | Cloud storage via Supabase Storage with embedded PDF viewer and image zoom |
-| **📊 Transparency Dashboard** | Real-time interactive charts powered by Recharts (resolution rates, category distribution) |
-| **💬 Forum & Public Opinions** | Multi-threaded discussions with live **Write / Preview** Markdown editors |
-| **⚡ Real-Time WebSockets** | Instant updates across clients via Socket.io without page refreshes |
-| **🛡️ Admin Panel** | Managing officials, promise status toggles, review submissions, and article publishing |
+### 1. Anonymous Whistleblowing Pipeline
+- **Zero-PII Metadata Stripping:** Disclosures submitted anonymously strip user identifiers, IP addresses, and session tokens before database persistence.
+- **Secret Tracking Codes:** Generates a unique, deterministic tracking code for submitters to monitor case progress and investigator updates without creating an account.
+
+### 2. Public Official Scorecards & Pledges
+- **Pledge Lifecycle Tracking:** Monitor official commitments categorized as *Kept*, *Broken*, or *Pending*.
+- **Controversies & Source References:** Documented public controversies with verified external references.
+- **Citizen Complaint Linkage:** Direct association between citizen-filed reports and official profiles.
+
+### 3. Civic Reporting & Evidence Archive
+- **Categorized Filing:** Submit reports across Corruption, Environment, Public Service, Infrastructure, and Human Rights.
+- **Embedded Document Viewer:** In-browser PDF reading and image inspection built into evidence detail pages.
+- **Cloud Object Preservation:** Secure storage integration for long-term document retention.
+
+### 4. Community Forum & Public Opinions
+- **Interactive Markdown Editor:** Live Write/Preview Markdown editing for formatting citations and policy op-eds.
+- **Real-Time WebSockets:** Socket.io integration delivering instant comment broadcasts across clients.
+
+### 5. Transparency Analytics Dashboard
+- Data visualizations computing case resolution rates, category distributions, and official promise fulfillment statistics.
 
 ---
 
-## 🏗️ Technical Architecture
+## System Architecture
 
-```
+```text
 verisphere/
-├── client/                      # React 18 + Vite Frontend
+├── client/                      # React 18 SPA (Vite)
 │   ├── src/
-│   │   ├── api/                 # Axios Client & Interceptors
-│   │   ├── components/          # MarkdownEditor, MarkdownRenderer, Navbar, FileUpload, StatusBadge
-│   │   ├── context/             # AuthContext (JWT & State)
-│   │   ├── hooks/               # useSocket (Real-time WebSockets)
-│   │   └── pages/               # Reports, Officials, Evidence, Forum, Opinions, Knowledge, Whistleblow, Admin
-│   ├── vercel.json              # Vercel SPA Routing Configuration
+│   │   ├── api/                 # Axios HTTP client configuration
+│   │   ├── components/          # Reusable UI components
+│   │   ├── context/             # AuthContext state management
+│   │   ├── hooks/               # Custom hooks (useSocket)
+│   │   └── pages/               # Application route views
+│   ├── vercel.json              # Client SPA routing rewrite rules
 │   └── vite.config.js
-├── server/                      # Node.js + Express Backend API
+├── server/                      # Node.js + Express REST API & WebSockets
 │   ├── prisma/
-│   │   ├── schema.prisma        # 16 Relational Data Models
-│   │   ├── seed.js              # Production & Local Demo Seeding Script
-│   │   └── clear.js             # Database Cleanup Utility
+│   │   ├── schema.prisma        # Database schema definitions (16 models)
+│   │   └── seed.js              # Database seeding script
 │   └── src/
-│       ├── middleware/          # JWT Authentication & Multer Cloud Upload
-│       ├── routes/              # Auth, Reports, Officials, Dashboard, Forum, Evidence, Knowledge, Opinions, Submissions
-│       ├── prisma.js            # Single Shared Prisma Client Singleton
-│       └── index.js             # Express Server & Socket.io Server Setup
+│       ├── middleware/          # JWT auth & upload handling
+│       ├── routes/              # Express API endpoints
+│       ├── prisma.js            # Prisma ORM singleton instance
+│       └── index.js             # Express entry point & Socket.io server
 └── README.md
 ```
 
 ---
 
-## 🛠️ Local Installation & Setup
+## Tech Stack
+
+- **Frontend:** React 18, Vite, React Router 6, Vanilla CSS Design System, Recharts, Lucide Icons
+- **Backend:** Node.js, Express.js, Socket.io, Prisma ORM 6, Multer, bcryptjs, jsonwebtoken
+- **Database:** PostgreSQL (Hosted on Supabase)
+- **Object Storage:** Supabase Storage
+- **Deployment:** Vercel (Frontend SPA) and Render (Backend API Web Service)
+
+---
+
+## Local Setup & Installation
 
 ### Prerequisites
-* Node.js 18+
-* PostgreSQL 14+ (Local or Supabase)
 
-### 1. Clone & Install Dependencies
+- Node.js 18 or higher
+- PostgreSQL 14 or higher (or a Supabase PostgreSQL instance)
+- npm
+
+### 1. Clone Repository & Install Dependencies
+
 ```bash
 git clone https://github.com/mrhjayeed/verisphere.git
 cd verisphere
 
-# Install root dependencies
+# Install root workspace dependencies
 npm install
 
-# Install server and client packages
+# Install server and client dependencies
 cd server && npm install && cd ..
 cd client && npm install && cd ..
 ```
 
-### 2. Database Setup & Seeding
-```bash
-# In server directory, configure .env
-cd server
-cp .env.example .env
+### 2. Environment Configuration
 
-# Run Prisma schema push & generate
+Create a `.env` file in the `server` directory:
+
+```env
+PORT=5000
+DATABASE_URL="postgresql://user:password@localhost:5432/verisphere"
+JWT_SECRET="your_secure_jwt_secret"
+CORS_ORIGIN="http://localhost:5173"
+
+# Optional: Supabase Storage configuration for cloud file uploads
+SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="your_supabase_service_role_key"
+```
+
+Create a `.env` file in the `client` directory:
+
+```env
+VITE_API_URL="http://localhost:5000"
+VITE_SOCKET_URL="http://localhost:5000"
+```
+
+### 3. Database Initialization
+
+```bash
+cd server
+
+# Apply database migrations and generate Prisma Client
 npx prisma db push
 
-# Seed demo dataset
+# Optional: Seed initial demonstration data
 node prisma/seed.js
 ```
 
-### 3. Run Development Servers
+### 4. Running Development Servers
+
+From the root directory, start both backend and frontend development servers concurrently:
+
 ```bash
-# From the root directory — launches both server (:5000) and client (:5173) concurrently
 npm run dev
 ```
 
-* **Frontend**: `http://localhost:5173`
-* **Backend API**: `http://localhost:5000`
+- **Frontend Application:** `http://localhost:5173`
+- **Backend API Server:** `http://localhost:5000`
 
 ---
 
-## 🚀 Production Deployment Blueprint
+## Production Deployment
 
-* **Database**: Supabase PostgreSQL (Connection Pooler on Port 6543)
-* **File Storage**: Supabase Public Storage Bucket (`verisphere-uploads`)
-* **Backend Hosting**: Render Web Service (`node src/index.js`)
-* **Frontend Hosting**: Vercel Single-Page App (`dist`)
+### Database & Cloud Storage
+1. Provision a PostgreSQL instance on Supabase.
+2. Use the connection pooler string (Port 6543) for `DATABASE_URL`.
+3. Create a public storage bucket named `verisphere-uploads`.
+
+### Backend API (Render)
+- Root Directory: `server`
+- Build Command: `npm install && npx prisma generate`
+- Start Command: `npm start`
+- Set required environment variables (`DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`).
+
+### Frontend SPA (Vercel)
+- Root Directory: `client`
+- Output Directory: `dist`
+- Set `VITE_API_URL` and `VITE_SOCKET_URL` environment variables pointing to your deployed API server.
 
 ---
 
-## 📜 License
+## Security & Whistleblower Protection
 
-This project is open-source and available under the [MIT License](LICENSE).
+Verisphere implements privacy-first design patterns to protect submitter confidentiality:
+- Anonymous whistleblowing submissions do not log user accounts, session cookies, IP addresses, or user-agent headers.
+- Secret Tracking Codes rely on cryptographically secure random identifiers to allow status queries without account creation.
+- File uploads are validated and sanitized prior to storage persistence.
 
 ---
 
-<p center="align">
-  Built with ❤️ for <strong>July Hackathon 2026</strong> · Dedicated to transparency, truth, and civic dignity.
-</p>
+## Contributing
+
+Contributions are welcome from developers, security researchers, legal advisors, and civic activists. Please feel free to open issues, submit pull requests, or propose new feature modules.
+
+---
+
+## License
+
+Verisphere is open-source software released under the [MIT License](LICENSE).
